@@ -1,70 +1,32 @@
-// Send a client decided change to the server
-var ignoreEventChange = false;
-
 var myClientId;
 var sessionId;
-var lastSentStateUpdateData = 0;
-
-const WAITING = 0;
-const READY = 1;
-
-var stateChangeStatus = { };
-
-stateChangeStatus[1 /*YT.PlayerState.PLAYING*/] = READY;
-stateChangeStatus[2 /*YT.PlayerState.PAUSED*/] = READY;
 
 const send = (data) => {
-    console.log("Sending message", data.type);
+    if (data.type != "pong") 
+        console.log("Sending message", data.type);
 
     connection.send(JSON.stringify(data));
 }
 
+// Send a client decided change to the server
+var ignoreEventChange = false;
 function sendChange(event) {
     if (ignoreEventChange) return;
 
     if (event === YT.PlayerState.PLAYING) {
-        console.log("Playing", stateChangeStatus[YT.PlayerState.PLAYING]);
-
-        if (stateChangeStatus[YT.PlayerState.PLAYING] == READY) {
-            stateChangeStatus[YT.PlayerState.PLAYING] = WAITING;
-            
-            lastSentStateUpdateData = Date.now();
-
-            send({
-                type: "state-update",
-                data: getVideoData(),
-                date: Date.now()
-            });
-        } else {
-            //stateChangeStatus[YT.PlayerState.PLAYING] = WAITING;
-        }
-    }
-    if (event === YT.PlayerState.PAUSED) {
-        console.log("Paused", stateChangeStatus[YT.PlayerState.PAUSED]);
-
-        if (stateChangeStatus[YT.PlayerState.PAUSED] == READY) {
-            stateChangeStatus[YT.PlayerState.PAUSED] = WAITING;
-
-            lastSentStateUpdateData = Date.now();
-
-            send({
-                type: "state-update",
-                data: getVideoData(),
-                date: Date.now()
-            });
-        } else {
-            //stateChangeStatus[YT.PlayerState.PAUSED] = WAITING;
-        }
-    }
-    if (event === YT.PlayerState.BUFFERING) {
-        console.log("Buffering");
-
-        lastSentStateUpdateData = Date.now();
+        console.log("Playing");
 
         send({
             type: "state-update",
-            data: getVideoData(),
-            date: Date.now()
+            data: getVideoData()
+        });
+    }
+    if (event === YT.PlayerState.PAUSED) {
+        console.log("Paused");
+
+        send({
+            type: "state-update",
+            data: getVideoData()
         });
     }
     if (event === YT.PlayerState.CUED) {
@@ -82,7 +44,9 @@ connection.onopen = function () {
 // Receiving message
 connection.onmessage = function (msg) {
     var message = JSON.parse(msg.data);
-    console.log("Recieved message", message.type);
+
+    if (message.type != "ping") console.log("Recieved message", message);
+
     switch (message.type) {
         case "join-session": {
             if (!message.success) return console.log("Failed to join session");
@@ -103,19 +67,17 @@ connection.onmessage = function (msg) {
             if (!message.success)
                 return console.log("state-update failed");
 
-            // ignoreEventChange = true;
-            // setTimeout(() => ignoreEventChange = false, 5000);
-
-            // If the latest message that I sent is more recent than the one I received
-            // if (lastSentStateUpdateData > message.date)
-            //     return console.log("Ignoring message. A newer state update exists");
+            ignoreEventChange = true;
+            setTimeout(() => ignoreEventChange = false, 100);
 
             // Check if the message was sent by me
-            // if (message.originalMessage.sentBy == myClientId)
-            //     return console.log("Ignoring state-update");
-
+            if (message.originalMessage.sentBy == myClientId)
+                return console.log("Received own message. Ignoring");
+                
             // Set timestamp
-            player.seekTo(message.data.timestamp, true);
+            const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
+            if (timeDiff > 1)
+                player.seekTo(message.data.timestamp, true);
 
             // Playback speed
             player.setPlaybackRate(message.data.playbackSpeed);
