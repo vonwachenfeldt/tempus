@@ -2,7 +2,7 @@ var myClientId;
 var sessionId;
 
 const send = (data) => {
-    if (data.type != "pong") 
+    if (data.type != "pong")
         console.log("Sending message", data.type);
 
     connection.send(JSON.stringify(data));
@@ -50,12 +50,12 @@ connection.onmessage = function (msg) {
     switch (message.type) {
         case "join-session": {
             if (!message.success) return console.log("Failed to join session");
-            
+
             sessionId = message.data.sessionId;
             myClientId = message.data.clientId;
 
             console.log("Joined session: ", sessionId);
-            
+
             break;
         }
         case "ping": {
@@ -73,7 +73,7 @@ connection.onmessage = function (msg) {
             // Check if the message was sent by me
             if (message.originalMessage.sentBy == myClientId)
                 return console.log("Received own message. Ignoring");
-                
+
             // Set timestamp
             const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
             if (timeDiff > 1)
@@ -94,6 +94,13 @@ connection.onmessage = function (msg) {
             break;
         }
         case "queue-video": {
+            break;
+        }
+        case "get-video-metadata": {
+            if(!message.success) return;
+            toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${url}</span></p>`;
+            document.getElementById('queue').innerHTML += toAdd;
+            document.getElementById('addVid').value = "";
             break;
         }
         default: {

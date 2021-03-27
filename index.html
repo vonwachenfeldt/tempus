@@ -19,7 +19,7 @@
     </div>
     <div class="queue-container">
         <div class="input-container">
-            <form onsubmit="queueVideo(document.getElementById('addVid').value); event.preventDefault();"
+            <form onsubmit="queueVideo(event, document.getElementById('addVid').value);"
                 autocomplete="off">
                 <input placeholder="Add a Youtube-URL to the queue" id="addVid">
             </form>
@@ -29,9 +29,9 @@
         </div>
     </div>
     <div id="snackbar" class="">Copied to Clipboard</div>
-    <script src="main.js"></script>
     <script src="youtubeapi.js"></script>
     <script src="communications.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
