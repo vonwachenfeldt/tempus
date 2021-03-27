@@ -1,25 +1,82 @@
 // Send a client decided change to the server
+var sessionId;
 function sendChange(event) {
-    var currentTimestamp = player.getCurrentTime(); // Seconds into the video, e.g 60s
-    var playbackSpeed = player.getPlaybackRate(); // Playback rate, e.g 1.0 or 2.0
-    console.log(event)
 
     if (event === YT.PlayerState.PLAYING) {
-        // Play
+        console.log("Playing");
+        send({
+            type: "state-update",
+            data: getVideoData()
+        });
     }
     if (event === YT.PlayerState.PAUSED) {
-        // Pause
+        console.log("Paused");
+        send({
+            type: "state-update",
+            data: getVideoData()
+        });
     }
     if (event === YT.PlayerState.BUFFERING) {
-        // Buffer
+        console.log("Buffering");
+        send({
+            type: "state-update",
+            data: getVideoData()
+        });
     }
 }
 
 // Websockets
 const connection = new WebSocket("ws://localhost:3500");
+connection.onopen = function () {
+    console.log("connected");
+    send({ type: "join-session", data: { sessionId: window.location.hash.slice(1) } })
+}
 
+// Receiving message
 connection.onmessage = function (msg) {
-    console.log(JSON.parse(msg.data));
+    var message = JSON.parse(msg.data);
+    console.log(message);
+    switch (message.type) {
+        case "join-session": {
+            if (!message.success) return console.log("Failed to join session")
+            sessionId = message.data.sessionId;
+            console.log("Joined session: ", sessionId);
+            break;
+        }
+        case "ping": {
+            send({ type: "pong" });
+            break;
+        }
+        case "state-update": {
+            break;
+        }
+        case "play-video": {
+            break;
+        }
+        case "queue-video": {
+            break;
+        }
+        default: {
+            console.log("Other message:", message.type);
+            break;
+        }
+    }
+}
+
+function getVideoData() {
+    var currentTimestamp = player.getCurrentTime(); // Seconds into the video, e.g 60s
+    var playbackSpeed = player.getPlaybackRate(); // Playback rate, e.g 1.0 or 2.0
+    var videoId = player.getVideoData()['video_id'];
+    var isPaused = (player.getPlayerState() == YT.PlayerState.PAUSED);
+    if (player.getPlayerState() == YT.PlayerState.PLAYING) {
+        isPaused = false;
+    }
+    return {
+        timestamp: currentTimestamp,
+        playbackSpeed: playbackSpeed,
+        isPaused: isPaused,
+        currentVideoId: videoId
+    };
 }
 
 const send = (data) => connection.send(JSON.stringify(data));
