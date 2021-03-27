@@ -21,7 +21,8 @@ function onYouTubeIframeAPIReady() {
         width: '640',
         videoId: 'M7lc1UVf-VE',
         playerVars: {
-            'autoplay': 0
+            'autoplay': 0,
+            'origin': "http://localhost:5500"
         },
         events: {
             'onReady': onPlayerReady,
