@@ -77,7 +77,7 @@ connection.onmessage = function (msg) {
                 return console.log("state-update failed");
 
             ignoreEventChange = true;
-            setTimeout(() => ignoreEventChange = false, 500);
+            setTimeout(() => ignoreEventChange = false, 5000);
 
             // If the latest message that I sent is more recent than the one I received
             if (lastSentStateUpdateData > message.date)

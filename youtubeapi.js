@@ -22,7 +22,10 @@ function onYouTubeIframeAPIReady() {
     videoId: 'uD4izuDMUQA',
     playerVars: {
       'autoplay': 0,
-      'origin': "http://localhost:5500"
+      'origin': "http://localhost:5500",
+      "rel": 0,
+      "modestbranding": 1,
+      'sandbox': "allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-top-navigation"
     },
     events: {
       'onReady': onPlayerReady,
