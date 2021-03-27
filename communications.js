@@ -1,13 +1,13 @@
 // Send a client decided change to the server
 function sendChange(event) {
     console.log(event);
-    if(event === 1) {
+    if (event === YT.PlayerState.PLAYING) {
         // Play
     }
-    if(event === 2) {
+    if (event === YT.PlayerState.PAUSED) {
         // Pause
     }
-    if(event === 3) {
+    if (event === YT.PlayerState.BUFFERING) {
         // Buffer
         var currentTimestamp = player.getCurrentTime();
     }

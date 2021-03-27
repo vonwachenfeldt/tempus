@@ -5,36 +5,38 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+function onPlayerStateChange(event) {
+
+    // function found in communications.js
+    sendChange(event.data);
+
+}
+
 // 2. This function creates an <iframe> (and YouTube player)
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player', {
-    height: '390',
-    width: '640',
-    videoId: 'M7lc1UVf-VE',
-    playerVars: {
-      'autoplay': 0
-    },
-    events: {
-      'onReady': onPlayerReady,
-      'onStateChange': onPlayerStateChange
-    }
-  });
+    player = new YT.Player('player', {
+        height: '390',
+        width: '640',
+        videoId: 'M7lc1UVf-VE',
+        playerVars: {
+            'autoplay': 0
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
 }
 
 // 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-  event.target.stopVideo();
+    event.target.stopVideo();
 }
 
 var done = false;
-function onPlayerStateChange(event) {
 
-  // function found in communications.js
-  sendChange(event.data);
-
-}
 function stopVideo() {
-  player.stopVideo();
+    player.stopVideo();
 }
