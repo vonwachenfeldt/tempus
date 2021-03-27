@@ -44,10 +44,7 @@ input:focus
   animation-iteration-count: infinite;
   animation-duration: 8s;
 }
-.queued-videos
-{
-  
-}
+
 .video
 {
   width: 100%;
@@ -91,6 +88,12 @@ h1
   animation-name: colorchange;
     animation-iteration-count: infinite;
     animation-duration: 8s;
+}
+.video-title
+{
+  color: rgb(0, 0, 0);
+  float: right;
+  font-family: 'Roboto', sans-serif;
 }
 @keyframes colorchange
 {

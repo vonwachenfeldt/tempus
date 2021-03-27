@@ -2,32 +2,36 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tempus</title>
-  <link type="text/css" rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tempus</title>
+    <link type="text/css" rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
-  <button id="invite" onclick="invite(window.location.href)">Invite</button>
-  <div class="player-container">
-    <div id="player"></div>
-    <h1>Tempus - Watch <img src="youtube.png" id="youtube-icon"> Together</h1>
-  </div>
-  <div class="queue-container">
-    <div class="input-container">
-        <input placeholder="Add a Youtube-URL to the queue">
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <button id="invite" onclick="invite(window.location.href)">Invite</button>
+    <div class="player-container">
+        <div id="player"></div>
+        <h1>Tempus - Watch <img src="youtube.png" id="youtube-icon"> Together</h1>
     </div>
-    <div class="queued-videos">
-      <p class="video">Youtube video</p>
+    <div class="queue-container">
+        <div class="input-container">
+            <form onsubmit="queueVideo(document.getElementById('addVid').value); event.preventDefault();"
+                autocomplete="off">
+                <input placeholder="Add a Youtube-URL to the queue" id="addVid">
+            </form>
+        </div>
+        <div class="queued-videos" id="queue">
+            <!-- Here goes queued videos dynamically -->
+        </div>
     </div>
-  </div>
-  <div id="snackbar" class="">Copied to Clipboard</div>
-  <script src="youtubeapi.js"></script>
-  <script src="communications.js"></script>
+    <div id="snackbar" class="">Copied to Clipboard</div>
+    <script src="main.js"></script>
+    <script src="youtubeapi.js"></script>
+    <script src="communications.js"></script>
 </body>
 
 </html>
