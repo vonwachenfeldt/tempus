@@ -45,6 +45,24 @@ function stopVideo() {
   player.stopVideo();
 }
 
-function writeToFrame() {
-  
+const invite = str => {
+  const el = document.createElement('textarea');
+  el.value = str;
+  el.setAttribute('readonly', '');
+  el.style.position = 'absolute';
+  el.style.left = '-9999px';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+  showSnack("Copied", 1000)  
+};
+
+function showSnack(message, ms) {
+  var snack = document.getElementById("snackbar");
+
+  snack.className = "show";
+  snack.textContent = message;
+
+  setTimeout(function () { snack.className = snack.className.replace("show", ""); }, ms);
 }
