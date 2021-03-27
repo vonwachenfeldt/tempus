@@ -7,8 +7,8 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 function onPlayerStateChange(event) {
 
-    // function found in communications.js
-    sendChange(event.data);
+  // function found in communications.js
+  sendChange(event.data);
 
 }
 
@@ -16,28 +16,32 @@ function onPlayerStateChange(event) {
 //    after the API code downloads.
 var player;
 function onYouTubeIframeAPIReady() {
-    player = new YT.Player('player', {
-        height: '390',
-        width: '640',
-        videoId: 'M7lc1UVf-VE',
-        playerVars: {
-            'autoplay': 0,
-            'origin': "http://localhost:5500"
-        },
-        events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-        }
-    });
+  player = new YT.Player('player', {
+    height: '390',
+    width: '640',
+    videoId: 'M7lc1UVf-VE',
+    playerVars: {
+      'autoplay': 0,
+      'origin': "http://localhost:5500"
+    },
+    events: {
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
+  });
 }
 
 // 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-    event.target.stopVideo();
+  event.target.stopVideo();
 }
 
 var done = false;
 
 function stopVideo() {
-    player.stopVideo();
+  player.stopVideo();
+}
+
+function writeToFrame() {
+  
 }
