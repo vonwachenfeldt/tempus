@@ -4,30 +4,57 @@ var ignoreEventChange = false;
 var myClientId;
 var sessionId;
 var lastSentStateUpdateData = 0;
+
+const WAITING = 0;
+const READY = 1;
+
+var stateChangeStatus = { };
+
+stateChangeStatus[1 /*YT.PlayerState.PLAYING*/] = READY;
+stateChangeStatus[2 /*YT.PlayerState.PAUSED*/] = READY;
+
+const send = (data) => {
+    console.log("Sending message", data.type);
+
+    connection.send(JSON.stringify(data));
+}
+
 function sendChange(event) {
     if (ignoreEventChange) return;
 
     if (event === YT.PlayerState.PLAYING) {
-        console.log("Playing");
+        console.log("Playing", stateChangeStatus[YT.PlayerState.PLAYING]);
 
-        lastSentStateUpdateData = Date.now();
+        if (stateChangeStatus[YT.PlayerState.PLAYING] == READY) {
+            stateChangeStatus[YT.PlayerState.PLAYING] = WAITING;
+            
+            lastSentStateUpdateData = Date.now();
 
-        send({
-            type: "state-update",
-            data: getVideoData(),
-            date: Date.now()
-        });
+            send({
+                type: "state-update",
+                data: getVideoData(),
+                date: Date.now()
+            });
+        } else {
+            //stateChangeStatus[YT.PlayerState.PLAYING] = WAITING;
+        }
     }
     if (event === YT.PlayerState.PAUSED) {
-        console.log("Paused");
+        console.log("Paused", stateChangeStatus[YT.PlayerState.PAUSED]);
 
-        lastSentStateUpdateData = Date.now();
+        if (stateChangeStatus[YT.PlayerState.PAUSED] == READY) {
+            stateChangeStatus[YT.PlayerState.PAUSED] = WAITING;
 
-        send({
-            type: "state-update",
-            data: getVideoData(),
-            date: Date.now()
-        });
+            lastSentStateUpdateData = Date.now();
+
+            send({
+                type: "state-update",
+                data: getVideoData(),
+                date: Date.now()
+            });
+        } else {
+            //stateChangeStatus[YT.PlayerState.PAUSED] = WAITING;
+        }
     }
     if (event === YT.PlayerState.BUFFERING) {
         console.log("Buffering");
@@ -55,7 +82,7 @@ connection.onopen = function () {
 // Receiving message
 connection.onmessage = function (msg) {
     var message = JSON.parse(msg.data);
-    console.log("Recieved message", message);
+    console.log("Recieved message", message.type);
     switch (message.type) {
         case "join-session": {
             if (!message.success) return console.log("Failed to join session");
@@ -76,12 +103,12 @@ connection.onmessage = function (msg) {
             if (!message.success)
                 return console.log("state-update failed");
 
-            ignoreEventChange = true;
-            setTimeout(() => ignoreEventChange = false, 5000);
+            // ignoreEventChange = true;
+            // setTimeout(() => ignoreEventChange = false, 5000);
 
             // If the latest message that I sent is more recent than the one I received
-            if (lastSentStateUpdateData > message.date)
-                return console.log("Ignoring message. A newer state update exists");
+            // if (lastSentStateUpdateData > message.date)
+            //     return console.log("Ignoring message. A newer state update exists");
 
             // Check if the message was sent by me
             // if (message.originalMessage.sentBy == myClientId)
@@ -129,5 +156,3 @@ function getVideoData() {
         currentVideoId: videoId
     };
 }
-
-const send = (data) => connection.send(JSON.stringify(data));

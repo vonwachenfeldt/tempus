@@ -9,7 +9,6 @@ function onPlayerStateChange(event) {
 
   // function found in communications.js
   sendChange(event.data);
-
 }
 
 // 2. This function creates an <iframe> (and YouTube player)
