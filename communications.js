@@ -1,27 +1,47 @@
 // Send a client decided change to the server
+var ignoreEventChange = false;
+
+var myClientId;
 var sessionId;
+var lastSentStateUpdateData = 0;
 function sendChange(event) {
+    if (ignoreEventChange) return;
 
     if (event === YT.PlayerState.PLAYING) {
         console.log("Playing");
+
+        lastSentStateUpdateData = Date.now();
+
         send({
             type: "state-update",
-            data: getVideoData()
+            data: getVideoData(),
+            date: Date.now()
         });
     }
     if (event === YT.PlayerState.PAUSED) {
         console.log("Paused");
+
+        lastSentStateUpdateData = Date.now();
+
         send({
             type: "state-update",
-            data: getVideoData()
+            data: getVideoData(),
+            date: Date.now()
         });
     }
     if (event === YT.PlayerState.BUFFERING) {
         console.log("Buffering");
+
+        lastSentStateUpdateData = Date.now();
+
         send({
             type: "state-update",
-            data: getVideoData()
+            data: getVideoData(),
+            date: Date.now()
         });
+    }
+    if (event === YT.PlayerState.CUED) {
+        console.log("Que:ed");
     }
 }
 
@@ -35,12 +55,16 @@ connection.onopen = function () {
 // Receiving message
 connection.onmessage = function (msg) {
     var message = JSON.parse(msg.data);
-    console.log(message);
+    console.log("Recieved message", message);
     switch (message.type) {
         case "join-session": {
-            if (!message.success) return console.log("Failed to join session")
+            if (!message.success) return console.log("Failed to join session");
+            
             sessionId = message.data.sessionId;
+            myClientId = message.data.clientId;
+
             console.log("Joined session: ", sessionId);
+            
             break;
         }
         case "ping": {
@@ -48,6 +72,33 @@ connection.onmessage = function (msg) {
             break;
         }
         case "state-update": {
+
+            if (!message.success)
+                return console.log("state-update failed");
+
+            ignoreEventChange = true;
+            setTimeout(() => ignoreEventChange = false, 500);
+
+            // If the latest message that I sent is more recent than the one I received
+            if (lastSentStateUpdateData > message.date)
+                return console.log("Ignoring message. A newer state update exists");
+
+            // Check if the message was sent by me
+            // if (message.originalMessage.sentBy == myClientId)
+            //     return console.log("Ignoring state-update");
+
+            // Set timestamp
+            player.seekTo(message.data.timestamp, true);
+
+            // Playback speed
+            player.setPlaybackRate(message.data.playbackSpeed);
+
+            // Set paused or played
+            if (message.data.isPaused)
+                player.pauseVideo();
+            else
+                player.playVideo();
+
             break;
         }
         case "play-video": {
