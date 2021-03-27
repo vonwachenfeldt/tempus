@@ -1,6 +1,9 @@
 // Send a client decided change to the server
 function sendChange(event) {
-    console.log(event);
+    var currentTimestamp = player.getCurrentTime(); // Seconds into the video, e.g 60s
+    var playbackSpeed = player.getPlaybackRate(); // Playback rate, e.g 1.0 or 2.0
+
+
     if (event === YT.PlayerState.PLAYING) {
         // Play
     }
@@ -9,6 +12,14 @@ function sendChange(event) {
     }
     if (event === YT.PlayerState.BUFFERING) {
         // Buffer
-        var currentTimestamp = player.getCurrentTime();
     }
 }
+
+// Websockets
+const connection = new WebSocket("ws://localhost:3500");
+
+connection.onmessage = function (msg) {
+    console.log(JSON.parse(msg.data));
+}
+
+const send = (data) => connection.send(JSON.stringify(data));
