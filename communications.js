@@ -97,8 +97,8 @@ connection.onmessage = function (msg) {
             break;
         }
         case "get-video-metadata": {
-            if(!message.success) return;
-            toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${url}</span></p>`;
+            if(!message.success) return console.log(message.error);
+            toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
             document.getElementById('queue').innerHTML += toAdd;
             document.getElementById('addVid').value = "";
             break;
