@@ -2,7 +2,7 @@
 function sendChange(event) {
     var currentTimestamp = player.getCurrentTime(); // Seconds into the video, e.g 60s
     var playbackSpeed = player.getPlaybackRate(); // Playback rate, e.g 1.0 or 2.0
-
+    console.log(event)
 
     if (event === YT.PlayerState.PLAYING) {
         // Play
