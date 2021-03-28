@@ -33,9 +33,11 @@ function onYouTubeIframeAPIReady() {
 
 // 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
+    console.log("Player ready");
+
     event.target.pauseVideo();
 
-    connection = new Connection("ws://localhost:3500/tempus")
+    connection = new Connection("ws://localhost:3500/tempus");
 }
 
 function getVideoData() {
@@ -78,7 +80,7 @@ function showSnack(message, ms) {
 
 function queueVideo(event, url) {
     event.preventDefault();
-    connection.send({ type: "get-video-metadata", data: { url } });
+    connection.send({ type: "queue-video", data: { url } });
 }
 
 function updateHash(room) {
