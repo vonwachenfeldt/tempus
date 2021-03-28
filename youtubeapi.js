@@ -87,3 +87,7 @@ function displayWatchers(amount) {
     }
   }
 }
+
+function hasVideoEnded() {
+  
+}

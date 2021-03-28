@@ -83,7 +83,7 @@ h1
   font-family: 'Roboto', sans-serif;
   outline: solid;
 }
-#invite:hover
+#invite:hover, .route:hover
 {
   animation-name: colorchange;
     animation-iteration-count: infinite;
@@ -99,6 +99,29 @@ h1
 {
   color: white;
   font-family: 'Roboto', sans-serif;
+}
+.route-container
+{
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+.route
+{
+  background-color: #33333300;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  outline: solid;
+  margin: 1rem;
+  width: 200px;
 }
 @keyframes colorchange
 {
