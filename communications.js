@@ -135,9 +135,11 @@ class Connection {
             }
             case "get-video-metadata": {
                 if(!message.success) return console.log(message.error);
-                toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
+                
+                var toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
                 document.getElementById('queue').innerHTML += toAdd;
                 document.getElementById('addVid').value = "";
+                
                 break;
             }
             case "broadcast-clients": {
