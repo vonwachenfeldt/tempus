@@ -35,7 +35,7 @@ function onYouTubeIframeAPIReady() {
 
 // 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-  event.target.stopVideo();
+  event.target.pauseVideo();
 }
 
 var done = false;
