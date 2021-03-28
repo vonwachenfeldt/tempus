@@ -135,8 +135,13 @@ class Connection {
             }
             case "get-video-metadata": {
                 if(!message.success) return console.log(message.error);
-                
-                var toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
+
+                var toAdd = "";
+                if (message.data.duration < 1) // Duration is less than one minute 
+                    toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)<span class="video-title">${message.data.url}</span></p>`;
+                else
+                    toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)<span class="video-title">${message.data.url}</span></p>`;
+
                 document.getElementById('queue').innerHTML += toAdd;
                 document.getElementById('addVid').value = "";
                 
