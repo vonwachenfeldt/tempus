@@ -64,4 +64,10 @@ function showSnack(message, ms) {
   snack.textContent = message;
 
   setTimeout(function () { snack.className = snack.className.replace("show", ""); }, ms);
+
+}
+
+function queueVideo(event, url) {
+  event.preventDefault();
+  send({type: "get-video-metadata", data: {url}});
 }
