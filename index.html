@@ -1,20 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome Tempus</title>
+    <title>Tempus - Homepage</title>
     <link type="text/css" rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <div class="player-container">
-        <h1>Tempus - Watch <img src="youtube.png" id="youtube-icon"> Together</h1>
+    <div style="margin-top: 10%; font-size: 2rem;" class="player-container">
+        <h1>Tempus - Watch <img src="youtube.png" id="youtube-icon-larger"> Together</h1>
     </div>
     <div class="route-container">
-        <a class="route" href="/session.html">Create a session</a>
-        <a class="route" onclick="invite(window.location.href)">Help</a>
+        <button class="route" onclick="showInputfield(true)">Join a session</button>
+        <button class="route" onclick="showInputfield(false)">Create a session</button>
+        <a class="route" onclick="">Help</a>
+        <br>
+        <div id="input-div" style="visibility: hidden;">
+            <h1 id="type-title"></h1>
+            <form onsubmit="attemptTojoinSession(event);" autocomplete="off">
+                <input id="session-input" placeholder="Session-ID" style="width: 400px;">
+            </form>
+        </div>
     </div>
+    <footer>
+        <a class="footer-link" href="https://www.github.com/vonwachenfeldt/tempus" target="_blank">Client on GitHub</a>
+        <a class="footer-link" href="https://www.github.com/vonwachenfeldt/tempus" target="_blank">Server on GitHub</a>
+    </footer>
+    <script src="youtubeapi.js"></script>
 </body>
+
 </html>
