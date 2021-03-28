@@ -57,6 +57,18 @@ connection.onmessage = function (msg) {
             myClientId = message.data.clientId;
             updateHash(message.data.sessionId);
 
+            // Set video state
+            player.seekTo(message.data.state.timestamp + 0.5, true);
+
+            // Playback speed
+            player.setPlaybackRate(message.data.state.playbackSpeed);
+
+            // Set paused or played
+            if (message.data.state.isPaused)
+                player.pauseVideo();
+            else
+                player.playVideo();
+
             console.log("Joined session:", sessionId);
 
             break;
