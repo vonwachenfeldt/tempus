@@ -64,13 +64,24 @@ function showSnack(message, ms) {
   snack.textContent = message;
 
   setTimeout(function () { snack.className = snack.className.replace("show", ""); }, ms);
-
 }
 
 function queueVideo(event, url) {
   event.preventDefault();
   send({type: "get-video-metadata", data: {url}});
 }
+
 function updateHash(room) {
   window.location.hash=room;
+}
+
+function displayWatchers(amount) {
+  switch(amount) {
+    case 1: {
+      document.getElementById("watching").textContent = `You're watching by yourself.`
+    }
+    default: {
+      document.getElementById("watching").textContent = `${amount} people watching.`
+    }
+  }
 }

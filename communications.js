@@ -104,6 +104,11 @@ connection.onmessage = function (msg) {
             document.getElementById('addVid').value = "";
             break;
         }
+        case "broadcast-clients": {
+            if(!message.success) return console.log(message.error);
+            displayWatchers(message.data);
+            break;
+        }
         default: {
             console.log("Other message:", message.type);
             break;

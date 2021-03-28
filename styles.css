@@ -95,6 +95,11 @@ h1
   float: right;
   font-family: 'Roboto', sans-serif;
 }
+#watching
+{
+  color: white;
+  font-family: 'Roboto', sans-serif;
+}
 @keyframes colorchange
 {
   0%   {outline-color: orange;}
