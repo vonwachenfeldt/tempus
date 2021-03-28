@@ -98,6 +98,17 @@ function displayWatchers(amount) {
     }
 }
 
-function hasVideoEnded() {
+function showInputfield(inputSwitch) { // true = join a room with id, false = create a room with id
+    document.getElementById("input-div").style.visibility = "visible";
+    if(inputSwitch == true) {
+        document.getElementById('type-title').textContent = "Join a session"
+    } else if(inputSwitch == false) {
+        document.getElementById('type-title').textContent = "Create a session"
+    }
+}
 
+function attemptTojoinSession(event) {
+    event.preventDefault();
+    console.log(`session.html#${document.getElementById('session-input').value}`);
+    window.location = (`${window.location.origin}/session.html#${document.getElementById('session-input').value}`);
 }
