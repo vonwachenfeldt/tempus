@@ -71,3 +71,6 @@ function queueVideo(event, url) {
   event.preventDefault();
   send({type: "get-video-metadata", data: {url}});
 }
+function updateHash(room) {
+  window.location.hash=room;
+}

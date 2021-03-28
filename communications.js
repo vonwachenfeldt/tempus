@@ -53,6 +53,7 @@ connection.onmessage = function (msg) {
 
             sessionId = message.data.sessionId;
             myClientId = message.data.clientId;
+            updateHash(message.data.sessionId);
 
             console.log("Joined session: ", sessionId);
 
