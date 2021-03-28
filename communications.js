@@ -37,7 +37,7 @@ function sendChange(event) {
 }
 
 // Websockets
-const connection = new WebSocket("wss://tempus.cloudno.de/ws");
+const connection = new WebSocket("ws://localhost:3500/tempus"); //wss://tempus.cloudno.de/ws
 connection.onopen = function () {
     console.log("connected");
     send({ type: "join-session", data: { sessionId: window.location.hash.slice(1) } })
@@ -106,6 +106,11 @@ connection.onmessage = function (msg) {
             toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
             document.getElementById('queue').innerHTML += toAdd;
             document.getElementById('addVid').value = "";
+            break;
+        }
+        case "broadcast-clients": {
+            if(!message.success) return console.log(message.error);
+            displayWatchers(message.data.watchers);
             break;
         }
         default: {
