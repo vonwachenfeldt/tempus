@@ -1,149 +1,154 @@
-var myClientId;
-var sessionId;
-
-const send = (data) => {
-    if (data.type != "pong")
-        console.log("Sending message", data.type);
-
-    connection.send(JSON.stringify(data));
-}
-
-// Send a client decided change to the server
-var ignoreEventChange = false;
-function sendChange(event) {
-    if (ignoreEventChange) return;
-
-    if (event === YT.PlayerState.PLAYING) {
-        console.log("Playing");
-
-        send({
-            type: "state-update",
-            data: getVideoData(),
-            date: Date.now()
-        });
-    }
-    if (event === YT.PlayerState.PAUSED) {
-        console.log("Paused");
-
-        send({
-            type: "state-update",
-            data: getVideoData(),
-            date: Date.now()
-        });
-    }
-    if (event === YT.PlayerState.CUED) {
-        console.log("Que:ed");
-    }
-}
 
 // Websockets
-const connection = new WebSocket("ws://localhost:3500/tempus"); //wss://tempus.cloudno.de/ws
-connection.onopen = function () {
-    console.log("connected");
-    send({ type: "join-session", data: { sessionId: window.location.hash.slice(1) } })
-}
+class Connection {
+    //wss://tempus.cloudno.de/ws
+    constructor(url) {
+        this.clientId = null;
+        this.sessionId = null;
 
-// Receiving message
-connection.onmessage = function (msg) {
-    var message = JSON.parse(msg.data);
+        this.ignoreEventChange = false;
+        
+        this.url = url;
+        this.conn = new WebSocket(url);
+        this.conn.onopen = this.handleConnected.bind(this);
 
-    if (message.type != "ping") console.log("Recieved message", message);
+        // Receiving message
+        this.conn.onmessage = this.handleMessage.bind(this);
+    }
 
-    switch (message.type) {
-        case "join-session": {
-            if (!message.success) return console.log("Failed to join session");
+    send(data) {
+        if (data.type != "pong")
+            console.log("Sending message", data.type);
 
-            sessionId = message.data.sessionId;
-            myClientId = message.data.clientId;
-            updateHash(message.data.sessionId);
+        console.log(data)
+    
+        this.conn.send(JSON.stringify(data));
+    }
 
-            // Set video state
-            player.seekTo(message.data.state.timestamp + 0.5, true);
+    // Send a client decided change to the server
+    sendChange(event) {
+        if (this.ignoreEventChange) return;
 
-            // Playback speed
-            player.setPlaybackRate(message.data.state.playbackSpeed);
-
-            // Set paused or played
-            if (message.data.state.isPaused)
-                player.pauseVideo();
-            else
-                player.playVideo();
-
-            console.log("Joined session:", sessionId);
-
-            break;
+        if (event === YT.PlayerState.PLAYING) {
+            console.log("Playing");
+    
+            this.send({
+                type: "state-update",
+                data: getVideoData(),
+                date: Date.now()
+            });
         }
-        case "ping": {
-            send({ type: "pong" });
-            break;
+        if (event === YT.PlayerState.PAUSED) {
+            console.log("Paused");
+    
+            this.send({
+                type: "state-update",
+                data: getVideoData(),
+                date: Date.now()
+            });
         }
-        case "state-update": {
-
-            if (!message.success)
-                return console.log("state-update failed");
-
-            ignoreEventChange = true;
-            setTimeout(() => ignoreEventChange = false, 100);
-
-            // Check if the message was sent by me
-            if (message.originalMessage.sentBy == myClientId)
-                return console.log("Received own message. Ignoring");
-            
-             // Set timestamp
-            const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
-            const maxTimeDesync = 0.5; // in seconds
-
-            if (timeDiff > maxTimeDesync)
-                player.seekTo(message.data.timestamp + 0.5, true);
-
-            // Playback speed
-            player.setPlaybackRate(message.data.playbackSpeed);
-
-            // Set paused or played
-            if (message.data.isPaused)
-                player.pauseVideo();
-            else
-                player.playVideo();
-
-            break;
-        }
-        case "play-video": {
-            break;
-        }
-        case "queue-video": {
-            break;
-        }
-        case "get-video-metadata": {
-            if(!message.success) return console.log(message.error);
-            toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
-            document.getElementById('queue').innerHTML += toAdd;
-            document.getElementById('addVid').value = "";
-            break;
-        }
-        case "broadcast-clients": {
-            if(!message.success) return console.log(message.error);
-            displayWatchers(message.data.watchers);
-            break;
-        }
-        default: {
-            console.log("Other message:", message.type);
-            break;
+        if (event === YT.PlayerState.CUED) {
+            console.log("Que:ed");
         }
     }
-}
 
-function getVideoData() {
-    var currentTimestamp = player.getCurrentTime(); // Seconds into the video, e.g 60s
-    var playbackSpeed = player.getPlaybackRate(); // Playback rate, e.g 1.0 or 2.0
-    var videoId = player.getVideoData()['video_id'];
-    var isPaused = (player.getPlayerState() == YT.PlayerState.PAUSED);
-    if (player.getPlayerState() == YT.PlayerState.PLAYING) {
-        isPaused = false;
+    handleConnected() {
+        console.log("Connected to", this.url);
+
+        console.log(this)
+
+        this.send({ 
+            type: "join-session", 
+            data: { sessionId: window.location.hash.slice(1) } 
+        });
     }
-    return {
-        timestamp: currentTimestamp,
-        playbackSpeed: playbackSpeed,
-        isPaused: isPaused,
-        currentVideoId: videoId
-    };
+
+    handleMessage(msg) {
+        var message = JSON.parse(msg.data);
+
+        if (message.type != "ping") console.log("Recieved message", message);
+    
+        switch (message.type) {
+            case "join-session": {
+                if (!message.success) return console.log("Failed to join session");
+    
+                this.sessionId = message.data.sessionId;
+                this.clientId = message.data.clientId;
+                updateHash(message.data.sessionId);
+    
+                // Set video state
+                if (message.data.state.timestamp != 0)
+                   player.seekTo(message.data.state.timestamp + 0.5, true);
+    
+                // Playback speed
+                player.setPlaybackRate(message.data.state.playbackSpeed);
+    
+                // Set paused or played
+                if (message.data.state.isPaused)
+                    player.pauseVideo();
+                else
+                    player.playVideo();
+    
+                console.log("Joined session:", this.sessionId);
+    
+                break;
+            }
+            case "ping": {
+                this.send({ type: "pong" });
+
+                break;
+            }
+            case "state-update": {
+                if (!message.success)
+                    return console.log("state-update failed");
+    
+                this.ignoreEventChange = true;
+                setTimeout(() => this.ignoreEventChange = false, 100);
+    
+                // Check if the message was sent by me
+                if (message.originalMessage.sentBy == this.clientId)
+                    return console.log("Received own message. Ignoring");
+                
+                 // Set timestamp
+                const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
+                const maxTimeDesync = 0.5; // in seconds
+    
+                if (timeDiff > maxTimeDesync)
+                    player.seekTo(message.data.timestamp + 0.5, true);
+    
+                // Playback speed
+                player.setPlaybackRate(message.data.playbackSpeed);
+    
+                // Set paused or played
+                if (message.data.isPaused)
+                    player.pauseVideo();
+                else
+                    player.playVideo();
+    
+                break;
+            }
+            case "play-video": {
+                break;
+            }
+            case "queue-video": {
+                break;
+            }
+            case "get-video-metadata": {
+                if(!message.success) return console.log(message.error);
+                toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
+                document.getElementById('queue').innerHTML += toAdd;
+                document.getElementById('addVid').value = "";
+                break;
+            }
+            case "broadcast-clients": {
+                if(!message.success) return console.log(message.error);
+                displayWatchers(message.data.watchers);
+                break;
+            }
+            default: {
+                console.log("Other message:", message.type);
+                break;
+            }
+        }
+    }
 }
