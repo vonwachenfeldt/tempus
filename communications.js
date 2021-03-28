@@ -18,7 +18,8 @@ function sendChange(event) {
 
         send({
             type: "state-update",
-            data: getVideoData()
+            data: getVideoData(),
+            date: Date.now()
         });
     }
     if (event === YT.PlayerState.PAUSED) {
@@ -26,7 +27,8 @@ function sendChange(event) {
 
         send({
             type: "state-update",
-            data: getVideoData()
+            data: getVideoData(),
+            date: Date.now()
         });
     }
     if (event === YT.PlayerState.CUED) {
@@ -35,7 +37,7 @@ function sendChange(event) {
 }
 
 // Websockets
-const connection = new WebSocket("ws://localhost:3500");
+const connection = new WebSocket("wss://tempus.cloudno.de/ws");
 connection.onopen = function () {
     console.log("connected");
     send({ type: "join-session", data: { sessionId: window.location.hash.slice(1) } })
@@ -55,7 +57,7 @@ connection.onmessage = function (msg) {
             myClientId = message.data.clientId;
             updateHash(message.data.sessionId);
 
-            console.log("Joined session: ", sessionId);
+            console.log("Joined session:", sessionId);
 
             break;
         }
@@ -74,11 +76,13 @@ connection.onmessage = function (msg) {
             // Check if the message was sent by me
             if (message.originalMessage.sentBy == myClientId)
                 return console.log("Received own message. Ignoring");
-
-            // Set timestamp
+            
+             // Set timestamp
             const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
-            if (timeDiff > 1)
-                player.seekTo(message.data.timestamp, true);
+            const maxTimeDesync = 0.5; // in seconds
+
+            if (timeDiff > maxTimeDesync)
+                player.seekTo(message.data.timestamp + 0.5, true);
 
             // Playback speed
             player.setPlaybackRate(message.data.playbackSpeed);

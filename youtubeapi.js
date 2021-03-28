@@ -21,7 +21,7 @@ function onYouTubeIframeAPIReady() {
     videoId: 'j5v8D-alAKE',
     playerVars: {
       'autoplay': 0,
-      'origin': "http://localhost:5500",
+      //'origin': "https://tempus-luddet.vercel.app",
       "rel": 0,
       "modestbranding": 1,
       'sandbox': "allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-top-navigation"
