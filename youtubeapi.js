@@ -79,9 +79,11 @@ function displayWatchers(amount) {
   switch(amount) {
     case 1: {
       document.getElementById("watching").textContent = `You're watching by yourself.`
+      break;
     }
     default: {
       document.getElementById("watching").textContent = `${amount} people watching.`
+      break;
     }
   }
 }
