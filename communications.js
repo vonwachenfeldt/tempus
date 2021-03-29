@@ -16,7 +16,7 @@ class Connection {
 
         this.sessionState = {};
 
-        this.ignoreEventChange = false;
+        youtubeIgnoreEventChange = false;
         
         this.url = url;
         this.conn = new WebSocket(url);
@@ -33,43 +33,6 @@ class Connection {
         console.log(data)
     
         this.conn.send(JSON.stringify(data));
-    }
-
-    // Send a client decided change to the server
-    sendChange(event) {
-        if (this.ignoreEventChange) return;
-
-        if (event === YT.PlayerState.PLAYING) {
-            console.log("Playing");
-    
-            this.send({
-                type: "state-update",
-                data: getVideoData(),
-                date: Date.now()
-            });
-        }
-        if (event === YT.PlayerState.PAUSED) {
-            console.log("Paused");
-    
-            this.send({
-                type: "state-update",
-                data: getVideoData(),
-                date: Date.now()
-            });
-        }
-        if (event === YT.PlayerState.ENDED) {
-            console.log("Video ended");
-
-
-            // Try to play the next video in the queue (use the queue on the server to avoid desync)
-            this.send({
-                type: "play-next-video",
-                date: Date.now()
-            });
-        }
-        if (event === YT.PlayerState.CUED) {
-            console.log("Que:ed");
-        }
     }
 
     handleConnected() {
@@ -111,8 +74,8 @@ class Connection {
                 if (!message.success)
                     return console.log("state-update failed");
     
-                this.ignoreEventChange = true;
-                setTimeout(() => this.ignoreEventChange = false, 100);
+                youtubeIgnoreEventChange = true;
+                setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
                 this.sessionState = message.data;
 

@@ -2,6 +2,7 @@ var connection = new Connection("ws://localhost:3500/tempus");
 var player;
 
 var youtubeIframeReady = false;
+var youtubeIgnoreEventChange = true;
 
 function createYoutubeIframe() {
     if (!connection.sessionState.currentVideoId) return;
@@ -12,11 +13,6 @@ function createYoutubeIframe() {
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-}
-
-function onPlayerStateChange(event) {
-    // function found in communications.js
-    connection.sendChange(event.data);
 }
 
 function onYouTubeIframeAPIReady() {
@@ -38,11 +34,11 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-function onPlayerReady(event) {
+function onPlayerReady() {
     youtubeIframeReady = true;
 
-    connection.ignoreEventChange = true;
-    setTimeout(() => connection.ignoreEventChange = false, 100);
+    youtubeIgnoreEventChange = true;
+    setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
     // Set video state
     if (connection.sessionState.timestamp != 0)
@@ -58,6 +54,42 @@ function onPlayerReady(event) {
         player.playVideo();
 
     player.playVideo();
+}
+
+
+function onPlayerStateChange({ data }) {
+    if (youtubeIgnoreEventChange) return;
+
+    if (event === YT.PlayerState.PLAYING) {
+        console.log("Playing");
+
+        connection.send({
+            type: "state-update",
+            data: getVideoData(),
+            date: Date.now()
+        });
+    }
+    if (event === YT.PlayerState.PAUSED) {
+        console.log("Paused");
+
+        connection.send({
+            type: "state-update",
+            data: getVideoData(),
+            date: Date.now()
+        });
+    }
+    if (event === YT.PlayerState.ENDED) {
+        console.log("Video ended");
+
+        // Try to play the next video in the queue (use the queue on the server to avoid desync)
+        connection.send({
+            type: "play-next-video",
+            date: Date.now()
+        });
+    }
+    if (event === YT.PlayerState.CUED) {
+        console.log("Que:ed");
+    }
 }
 
 function getVideoData() {
