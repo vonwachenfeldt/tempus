@@ -173,5 +173,5 @@ function updateTitle(title) {
 }
 
 function deleteVideo(id) {
-    document.getElementById('queue').removeChild(document.querySelector(`[data-id=${id}]`));
+    connection.send({type: "delete-queue-entry", data: {id: id}});
 }

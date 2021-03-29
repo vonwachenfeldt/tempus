@@ -130,7 +130,11 @@ class Connection {
 
                 break;
             }
-            case "delete-video": {
+            case "delete-queue-entry": {
+                if (!message.success) return console.log(message.error);
+
+                document.getElementById('queue').removeChild(document.querySelector(`[data-id=${message.data.id}]`));
+
                 break;
             }
             case "get-video-metadata": {
