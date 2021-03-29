@@ -1,25 +1,32 @@
-var connection;
+var connection = new Connection("ws://localhost:3500/tempus");
+var player;
 
-var tag = document.createElement('script');
+var youtubeIframeReady = false;
 
-tag.src = "https://www.youtube.com/iframe_api";
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+function createYoutubeIframe() {
+    if (!connection.sessionState.currentVideoId) return;
+    if (youtubeIframeReady) return; // Don't create duplicate iframes
+
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+}
 
 function onPlayerStateChange(event) {
     // function found in communications.js
     connection.sendChange(event.data);
 }
 
-var player;
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '390',
         width: '640',
-        videoId: 'j5v8D-alAKE',
+        videoId: connection.sessionState.currentVideoId,
         playerVars: {
             'autoplay': 0,
-            //'origin': "https://tempus-luddet.vercel.app",
+            'origin': "https://tempus-luddet.vercel.app",
             "rel": 0,
             "modestbranding": 1,
             'sandbox': "allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-top-navigation"
@@ -31,13 +38,26 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
-// 3. The API will call this function when the video player is ready.
 function onPlayerReady(event) {
-    console.log("Player ready");
+    youtubeIframeReady = true;
 
-    event.target.pauseVideo();
+    connection.ignoreEventChange = true;
+    setTimeout(() => connection.ignoreEventChange = false, 100);
 
-    connection = new Connection("ws://localhost:3500/tempus");
+    // Set video state
+    if (connection.sessionState.timestamp != 0)
+        player.seekTo(connection.sessionState.timestamp, true);
+
+    // Playback speed
+    player.setPlaybackRate(connection.sessionState.playbackSpeed);
+
+    // Set paused or played
+    if (connection.sessionState.isPaused)
+        player.pauseVideo();
+    else
+        player.playVideo();
+
+    player.playVideo();
 }
 
 function getVideoData() {

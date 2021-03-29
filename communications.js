@@ -1,10 +1,20 @@
 
 // Websockets
+
+const defaultSessionState = {
+    timestamp: 0, 
+    playbackSpeed: 1, 
+    isPaused: true,
+    currentVideoId: "",
+    queue: []
+};
 class Connection {
     //wss://tempus.cloudno.de/ws
     constructor(url) {
         this.clientId = null;
         this.sessionId = null;
+
+        this.sessionState = {};
 
         this.ignoreEventChange = false;
         
@@ -65,8 +75,6 @@ class Connection {
     handleConnected() {
         console.log("Connected to", this.url);
 
-        console.log(this)
-
         this.send({ 
             type: "join-session", 
             data: { sessionId: window.location.hash.slice(1) } 
@@ -85,19 +93,10 @@ class Connection {
                 this.sessionId = message.data.sessionId;
                 this.clientId = message.data.clientId;
                 updateHash(message.data.sessionId);
-    
-                // Set video state
-                if (message.data.state.timestamp != 0)
-                   player.seekTo(message.data.state.timestamp + 0.5, true);
-    
-                // Playback speed
-                player.setPlaybackRate(message.data.state.playbackSpeed);
-    
-                // Set paused or played
-                if (message.data.state.isPaused)
-                    player.pauseVideo();
-                else
-                    player.playVideo();
+
+                // Load the youtube player
+                this.sessionState = message.data.state;
+                createYoutubeIframe();
     
                 console.log("Joined session:", this.sessionId);
     
@@ -114,6 +113,11 @@ class Connection {
     
                 this.ignoreEventChange = true;
                 setTimeout(() => this.ignoreEventChange = false, 100);
+
+                this.sessionState = message.data;
+
+                if (!youtubeIframeReady)
+                    return createYoutubeIframe();
     
                 // Check if the message was sent by me
                 if (message.originalMessage.sentBy == this.clientId)
@@ -132,14 +136,23 @@ class Connection {
                 // Set paused or played
                 if (message.data.isPaused)
                     player.pauseVideo();
-                else
-                    player.playVideo();
+                else {
+                    setTimeout(() => player.playVideo(), 100);
+
+                    //player.playVideo();
+                    console.log("play state update")
+                }
     
                 break;
             }
             case "play-next-video": {
 
-                player.loadVideoById(message.data.video.videoId);
+                this.sessionState = { ...defaultSessionState, currentVideoId: message.data.video.videoId };
+
+                if (!youtubeIframeReady) 
+                    createYoutubeIframe();
+                else
+                    player.loadVideoById(message.data.video.videoId);
 
                 break;
             }
@@ -147,6 +160,7 @@ class Connection {
 
                 // Get the last element
                 const newQueueEntry = message.data.queue[message.data.queue.length - 1];
+                if (!newQueueEntry) return;
 
                 var toAdd = "";
                 if (newQueueEntry.duration < 1) // Duration is less than one minute 
