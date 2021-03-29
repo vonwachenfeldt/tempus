@@ -49,6 +49,16 @@ class Connection {
                 date: Date.now()
             });
         }
+        if (event === YT.PlayerState.ENDED) {
+            console.log("Video ended");
+
+
+            // Try to play the next video in the queue (use the queue on the server to avoid desync)
+            this.send({
+                type: "play-next-video",
+                date: Date.now()
+            });
+        }
         if (event === YT.PlayerState.CUED) {
             console.log("Que:ed");
         }
@@ -129,17 +139,40 @@ class Connection {
     
                 break;
             }
-            case "play-video": {
+            case "play-next-video": {
+
+                player.loadVideoById(message.data.video.videoId);
+
                 break;
             }
             case "queue-video": {
+
+                // Get the last element
+                const newQueueEntry = message.data.queue[message.data.queue.length - 1];
+
+                var toAdd = "";
+                if (newQueueEntry.duration < 1) // Duration is less than one minute 
+                    toAdd = `<p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration * 60)} seconds)<span class="video-title">${newQueueEntry.url}</span></p>`;
+                else
+                    toAdd = `<p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration)} minutes)<span class="video-title">${newQueueEntry.url}</span></p>`;
+
+                document.getElementById('queue').innerHTML += toAdd;
+                document.getElementById('addVid').value = "";
+
                 break;
             }
             case "get-video-metadata": {
                 if(!message.success) return console.log(message.error);
-                toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${message.data.duration} seconds long)<span class="video-title">${message.data.url}</span></p>`;
+
+                var toAdd = "";
+                if (message.data.duration < 1) // Duration is less than one minute 
+                    toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)<span class="video-title">${message.data.url}</span></p>`;
+                else
+                    toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)<span class="video-title">${message.data.url}</span></p>`;
+
                 document.getElementById('queue').innerHTML += toAdd;
                 document.getElementById('addVid').value = "";
+                
                 break;
             }
             case "broadcast-clients": {
