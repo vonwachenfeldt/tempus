@@ -56,12 +56,12 @@ function onPlayerReady() {
     player.playVideo();
 }
 
-
-function onPlayerStateChange({ data }) {
+function onPlayerStateChange(event) {
     if (youtubeIgnoreEventChange) return;
 
-    if (event === YT.PlayerState.PLAYING) {
+    if (event.data === YT.PlayerState.PLAYING) {
         console.log("Playing");
+        updateTitle(`Playing: ${player.getVideoData().title}`)
 
         connection.send({
             type: "state-update",
@@ -69,8 +69,9 @@ function onPlayerStateChange({ data }) {
             date: Date.now()
         });
     }
-    if (event === YT.PlayerState.PAUSED) {
+    if (event.data === YT.PlayerState.PAUSED) {
         console.log("Paused");
+        updateTitle(`Paused: ${player.getVideoData().title}`)
 
         connection.send({
             type: "state-update",
@@ -78,7 +79,7 @@ function onPlayerStateChange({ data }) {
             date: Date.now()
         });
     }
-    if (event === YT.PlayerState.ENDED) {
+    if (event.data === YT.PlayerState.ENDED) {
         console.log("Video ended");
 
         // Try to play the next video in the queue (use the queue on the server to avoid desync)
@@ -87,7 +88,7 @@ function onPlayerStateChange({ data }) {
             date: Date.now()
         });
     }
-    if (event === YT.PlayerState.CUED) {
+    if (event.data === YT.PlayerState.CUED) {
         console.log("Que:ed");
     }
 }
@@ -154,9 +155,9 @@ function displayWatchers(amount) {
 
 function showInputfield(inputSwitch) { // true = join a room with id, false = create a room with id
     document.getElementById("input-div").style.visibility = "visible";
-    if(inputSwitch == true) {
+    if (inputSwitch == true) {
         document.getElementById('type-title').textContent = "Join a session"
-    } else if(inputSwitch == false) {
+    } else if (inputSwitch == false) {
         document.getElementById('type-title').textContent = "Create a session"
     }
 }
@@ -165,4 +166,12 @@ function attemptTojoinSession(event) {
     event.preventDefault();
     console.log(`session.html#${document.getElementById('session-input').value}`);
     window.location = (`${window.location.origin}/session.html#${document.getElementById('session-input').value}`);
+}
+
+function updateTitle(title) {
+    document.title = `${title}`;
+}
+
+function deleteVideo(id) {
+    document.getElementById('queue').removeChild(document.querySelector(`[data-id=${id}]`));
 }

@@ -15,8 +15,6 @@ class Connection {
         this.sessionId = null;
 
         this.sessionState = {};
-
-        youtubeIgnoreEventChange = false;
         
         this.url = url;
         this.conn = new WebSocket(url);
@@ -31,7 +29,7 @@ class Connection {
             console.log("Sending message", data.type);
 
         console.log(data)
-    
+
         this.conn.send(JSON.stringify(data));
     }
 
@@ -48,11 +46,11 @@ class Connection {
         var message = JSON.parse(msg.data);
 
         if (message.type != "ping") console.log("Recieved message", message);
-    
+
         switch (message.type) {
             case "join-session": {
                 if (!message.success) return console.log("Failed to join session");
-    
+
                 this.sessionId = message.data.sessionId;
                 this.clientId = message.data.clientId;
                 updateHash(message.data.sessionId);
@@ -62,7 +60,7 @@ class Connection {
                 createYoutubeIframe();
     
                 console.log("Joined session:", this.sessionId);
-    
+
                 break;
             }
             case "ping": {
@@ -85,27 +83,23 @@ class Connection {
                 // Check if the message was sent by me
                 if (message.originalMessage.sentBy == this.clientId)
                     return console.log("Received own message. Ignoring");
-                
-                 // Set timestamp
+
+                // Set timestamp
                 const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
                 const maxTimeDesync = 0.5; // in seconds
-    
+
                 if (timeDiff > maxTimeDesync)
                     player.seekTo(message.data.timestamp + 0.5, true);
-    
+
                 // Playback speed
                 player.setPlaybackRate(message.data.playbackSpeed);
-    
+
                 // Set paused or played
                 if (message.data.isPaused)
                     player.pauseVideo();
-                else {
-                    setTimeout(() => player.playVideo(), 100);
+                else
+                    player.playVideo();
 
-                    //player.playVideo();
-                    console.log("play state update")
-                }
-    
                 break;
             }
             case "play-next-video": {
@@ -127,31 +121,34 @@ class Connection {
 
                 var toAdd = "";
                 if (newQueueEntry.duration < 1) // Duration is less than one minute 
-                    toAdd = `<p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration * 60)} seconds)<span class="video-title">${newQueueEntry.url}</span></p>`;
+                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration * 60)} seconds)<span class="video-title">${newQueueEntry.url}</span></p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
                 else
-                    toAdd = `<p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration)} minutes)<span class="video-title">${newQueueEntry.url}</span></p>`;
+                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration)} minutes)<span class="video-title">${newQueueEntry.url}</span></p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
                 document.getElementById('addVid').value = "";
 
+                break;
+            }
+            case "delete-video": {
                 break;
             }
             case "get-video-metadata": {
-                if(!message.success) return console.log(message.error);
+                if (!message.success) return console.log(message.error);
 
                 var toAdd = "";
                 if (message.data.duration < 1) // Duration is less than one minute 
-                    toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)<span class="video-title">${message.data.url}</span></p>`;
+                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)<span class="video-title">${message.data.url}</span></p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
                 else
-                    toAdd = `<p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)<span class="video-title">${message.data.url}</span></p>`;
+                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)<span class="video-title">${message.data.url}</span></p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
                 document.getElementById('addVid').value = "";
-                
+
                 break;
             }
             case "broadcast-clients": {
-                if(!message.success) return console.log(message.error);
+                if (!message.success) return console.log(message.error);
                 displayWatchers(message.data.watchers);
                 break;
             }

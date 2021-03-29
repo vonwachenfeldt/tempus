@@ -74,7 +74,7 @@ input:focus
 
 .video
 {
-  width: 100%;
+  width: calc(100% - 40px);
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -84,6 +84,23 @@ input:focus
   font-family: 'Roboto', sans-serif;
   background-color: white;
   text-align: left;
+}
+.del-video
+{
+  margin-left: 2px;
+  width: 38px;
+  height: 50px;
+  background-color: white;
+  border-radius: 4px;
+  user-select: none;
+}
+.del-video:hover
+{
+  background-color: rgb(250, 0, 0);
+}
+.video-div
+{
+  width: 100%;
 }
 h1
 {
