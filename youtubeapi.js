@@ -37,11 +37,7 @@ function onPlayerReady(event) {
 
     event.target.pauseVideo();
 
-<<<<<<< HEAD
-    connection = new Connection("wss://tempus.cloudno.de/tempus") //ws://localhost:3500/tempus
-=======
     connection = new Connection("ws://localhost:3500/tempus");
->>>>>>> bf2ea75d06017c7e31a780987aa8c503485794fa
 }
 
 function getVideoData() {
@@ -106,9 +102,9 @@ function displayWatchers(amount) {
 
 function showInputfield(inputSwitch) { // true = join a room with id, false = create a room with id
     document.getElementById("input-div").style.visibility = "visible";
-    if(inputSwitch == true) {
+    if (inputSwitch == true) {
         document.getElementById('type-title').textContent = "Join a session"
-    } else if(inputSwitch == false) {
+    } else if (inputSwitch == false) {
         document.getElementById('type-title').textContent = "Create a session"
     }
 }
@@ -120,5 +116,9 @@ function attemptTojoinSession(event) {
 }
 
 function updateTitle(title) {
-  document.title = `${title}`;  
+    document.title = `${title}`;
+}
+
+function deleteVideo(id) {
+    document.getElementById('queue').removeChild(document.querySelector(`[data-id=${id}]`));
 }
