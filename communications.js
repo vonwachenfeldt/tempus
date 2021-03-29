@@ -31,7 +31,8 @@ class Connection {
 
         if (event === YT.PlayerState.PLAYING) {
             console.log("Playing");
-    
+            updateTitle(`Playing: ${player.getVideoData().title}`)
+
             this.send({
                 type: "state-update",
                 data: getVideoData(),
@@ -40,7 +41,8 @@ class Connection {
         }
         if (event === YT.PlayerState.PAUSED) {
             console.log("Paused");
-    
+            updateTitle(`Paused: ${player.getVideoData().title}`)
+
             this.send({
                 type: "state-update",
                 data: getVideoData(),

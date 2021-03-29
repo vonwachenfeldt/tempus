@@ -35,7 +35,7 @@ function onYouTubeIframeAPIReady() {
 function onPlayerReady(event) {
     event.target.pauseVideo();
 
-    connection = new Connection("ws://localhost:3500/tempus")
+    connection = new Connection("wss://tempus.cloudno.de/tempus") //ws://localhost:3500/tempus
 }
 
 function getVideoData() {
@@ -111,4 +111,8 @@ function attemptTojoinSession(event) {
     event.preventDefault();
     console.log(`session.html#${document.getElementById('session-input').value}`);
     window.location = (`${window.location.origin}/session.html#${document.getElementById('session-input').value}`);
+}
+
+function updateTitle(title) {
+  document.title = `${title}`;  
 }
