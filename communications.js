@@ -121,12 +121,11 @@ class Connection {
 
                 var toAdd = "";
                 if (newQueueEntry.duration < 1) // Duration is less than one minute 
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration * 60)} seconds)<span class="video-title">${newQueueEntry.url}</span></p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${newQueueEntry.title.slice(0, 60) + "..."} <br><span class="channel-name">by ${newQueueEntry.channel.slice(0, 20) + "..."}</span> (${Math.round(newQueueEntry.duration * 60)} seconds)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
                 else
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration)} minutes)<span class="video-title">${newQueueEntry.url}</span></p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${newQueueEntry.title.slice(0, 60) + "..."} <br><span class="channel-name">by ${newQueueEntry.channel.slice(0, 20) + "..."}</span> (${Math.round(newQueueEntry.duration)} minutes)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
-                document.getElementById('addVid').value = "";
 
                 break;
             }
@@ -142,12 +141,11 @@ class Connection {
 
                 var toAdd = "";
                 if (message.data.duration < 1) // Duration is less than one minute 
-                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)<span class="video-title">${message.data.url}</span></p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)</p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
                 else
-                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)<span class="video-title">${message.data.url}</span></p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)</p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
-                document.getElementById('addVid').value = "";
 
                 break;
             }

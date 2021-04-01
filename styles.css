@@ -29,18 +29,42 @@ footer
   margin: 2rem;
   text-align: center;
 }
+.container
+{
+  display: flex;
+  text-align: left;
+  flex-wrap: wrap;
+}
 .player-container
 {
   display: block;
-  margin: 0 auto;
   text-align: center;
+  width: 70%;
+}
+.status
+{
+  width: 10%;
+  margin: 0;
+  padding: 0;
+  margin: 0.5rem;
 }
 #player
 {
-  max-width: 1280px;
-  max-height: 720px;
+  max-width: 1366px;
+  max-height: 768px;
   width: 100%;
   height: calc(100vw * 0.5625);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  margin: 0.5rem;
+}
+#no-video
+{
+  display: inline;
+  vertical-align: middle;
+  color: grey;
 }
 .queue-container
 {
@@ -48,8 +72,9 @@ footer
   margin: 0 auto;
   text-align: center;
   margin-top: 1rem;
-  width: 100%;
+  width: 450px;
   max-width: 1280px;
+  margin-right: 0.5rem;
 }
 input
 {
@@ -63,33 +88,55 @@ input
   font-family: 'Roboto', sans-serif;
   font-weight: 800;
   outline: none;
+  height: 40px;
+  margin-left: 0;
+}
+#room
+{
+  max-width: 350px;
+  display: inline-block;
+  vertical-align: middle;
 }
 input:focus
 {
   outline: solid;
-  animation-name: colorchange;
-  animation-iteration-count: infinite;
-  animation-duration: 8s;
+  outline-color: rgba(250, 0, 0, 0.75);
+  outline-width: 3px;
 }
-
 .video
 {
   width: calc(100% - 40px);
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
-  border: 1px solid #ccc;
+  border: 1px solid rgb(19, 19, 19);
   border-radius: 4px;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
   background-color: white;
   text-align: left;
+  text-overflow: ellipsis;
+  background-color: rgb(12, 12, 12);
+  color: white;
+  height: 107px;
+}
+.thumbnail
+{
+  width: 120px;
+  margin-right: 20px;
+  vertical-align: middle;
+  float: left;
+}
+.channel-name
+{
+  font-style: italic;
+  opacity: 0.75;
 }
 .del-video
 {
   margin-left: 2px;
   width: 38px;
-  height: 50px;
+  height: 107px;
   background-color: white;
   border-radius: 4px;
   user-select: none;
@@ -101,11 +148,35 @@ input:focus
 .video-div
 {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 h1
 {
   color: white;
   font-family: 'Roboto', sans-serif;
+}
+.nav-bar
+{
+  margin-left: 2.5rem;
+  width: 90%;
+  width: calc(100% - 16px - 2rem);
+  max-width: 1200px;
+}
+#title
+{
+  font-size: 2rem;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4rem;
+  user-select: none;
+  opacity: 0.9;
+}
+#title:hover
+{
+  opacity: 1;
+  cursor: pointer;
 }
 #youtube-icon
 {
@@ -172,6 +243,12 @@ h1
   margin: 1rem;
   width: 300px;
 }
+form
+{
+  display: inline-block;
+  width: 20%;
+}
+
 @keyframes colorchange
 {
   0%   {outline-color: orange;}
@@ -234,4 +311,27 @@ h1
 @keyframes fadeout {
   from {bottom: 30px; opacity: 1;}
   to {bottom: 0; opacity: 0;}
+}
+
+@media (max-width: 1250px) {
+  #title-fraction
+  {
+    display: none;
+  }
+  #room
+  {
+    width: 200%;
+  }
+  #no-video
+  {
+    font-size: 1.5rem;
+  }
+  #player
+  {
+    width: 100%;
+  }
+  .player-container
+  {
+    width: calc(100% - 16px);
+  }
 }

@@ -1,4 +1,5 @@
-var serverUrl = window.location.port ? "ws://localhost:8080/tempus" : "wss://ludvig.cloudno.de/tempus";
+// var serverUrl = window.location.port ? "ws://localhost:8080/tempus" : "wss://ludvig.cloudno.de/tempus";
+var serverUrl = "wss://ludvig.cloudno.de/tempus";
 
 var connection = new Connection(serverUrl);
 var player;
@@ -136,6 +137,7 @@ function showSnack(message, ms) {
 function queueVideo(event, url) {
     event.preventDefault();
     connection.send({ type: "queue-video", data: { url } });
+    document.getElementById('room').value = "";
 }
 
 function updateHash(room) {
@@ -145,7 +147,7 @@ function updateHash(room) {
 function displayWatchers(amount) {
     switch (amount) {
         case 1: {
-            document.getElementById("watching").textContent = `You're watching by yourself.`
+            document.getElementById("watching").textContent = `Watching alone.`
             break;
         }
         default: {
