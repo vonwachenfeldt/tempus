@@ -8,7 +8,7 @@ var youtubeIframeReady = false;
 var youtubeIgnoreEventChange = true;
 
 function createYoutubeIframe() {
-    if (!connection.sessionState.currentVideoId) return;
+    if (connection.sessionState.queue.length == 0) return; // If no videos exists
     if (youtubeIframeReady) return; // Don't create duplicate iframes
 
     var tag = document.createElement('script');
@@ -22,7 +22,7 @@ function onYouTubeIframeAPIReady() {
     player = new YT.Player('player', {
         height: '390',
         width: '640',
-        videoId: connection.sessionState.currentVideoId,
+        videoId: connection.getVideoToPlay().id,
         playerVars: {
             'autoplay': 0,
             'origin': "https://tempus-luddet.vercel.app",
@@ -43,15 +43,17 @@ function onPlayerReady() {
     youtubeIgnoreEventChange = true;
     setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
+    const video = connection.getVideoToPlay().id;
+
     // Set video state
-    if (connection.sessionState.timestamp != 0)
-        player.seekTo(connection.sessionState.timestamp, true);
+    if (video.timestamp != 0)
+        player.seekTo(video.timestamp, true);
 
     // Playback speed
-    player.setPlaybackRate(connection.sessionState.playbackSpeed);
+    player.setPlaybackRate(video.playbackSpeed);
 
     // Set paused or played
-    if (connection.sessionState.isPaused)
+    if (video.isPaused)
         player.pauseVideo();
     else
         player.playVideo();
@@ -63,7 +65,6 @@ function onPlayerStateChange(event) {
     if (youtubeIgnoreEventChange) return;
 
     if (event.data === YT.PlayerState.PLAYING) {
-        console.log("Playing");
         updateTitle(`Playing: ${player.getVideoData().title}`)
 
         connection.send({
@@ -73,7 +74,6 @@ function onPlayerStateChange(event) {
         });
     }
     if (event.data === YT.PlayerState.PAUSED) {
-        console.log("Paused");
         updateTitle(`Paused: ${player.getVideoData().title}`)
 
         connection.send({
@@ -84,6 +84,8 @@ function onPlayerStateChange(event) {
     }
     if (event.data === YT.PlayerState.ENDED) {
         console.log("Video ended");
+
+        if (!connection.isAdmin) return;
 
         // Try to play the next video in the queue (use the queue on the server to avoid desync)
         connection.send({
@@ -108,7 +110,8 @@ function getVideoData() {
         timestamp: currentTimestamp,
         playbackSpeed: playbackSpeed,
         isPaused: isPaused,
-        currentVideoId: videoId
+        currentVideoId: videoId,
+        queueIndex: connection.sessionState.currentQueueIndex
     };
 }
 
@@ -136,7 +139,7 @@ function showSnack(message, ms) {
 
 function queueVideo(event, url) {
     event.preventDefault();
-    connection.send({ type: "queue-video", data: { url } });
+    connection.send({ type: "add-video-to-queue", data: { url } });
     document.getElementById('room').value = "";
 }
 

@@ -8,13 +8,14 @@ const defaultSessionState = {
     currentVideoId: "",
     queue: []
 };
-class Connection {
-    //wss://tempus.cloudno.de/ws
-    constructor(url) {
-        this.clientId = null;
-        this.sessionId = null;
 
+class Connection {
+    constructor(url) {
         this.sessionState = {};
+
+        this.isAdmin = false;
+        this.sessionId = null;
+        this.clientId = null;
         
         this.url = url;
         this.conn = new WebSocket(url);
@@ -26,9 +27,7 @@ class Connection {
 
     send(data) {
         if (data.type != "pong")
-            console.log("Sending message", data.type);
-
-        console.log(data)
+            console.log("Sending message", data);
 
         this.conn.send(JSON.stringify(data));
     }
@@ -53,11 +52,12 @@ class Connection {
 
                 this.sessionId = message.data.sessionId;
                 this.clientId = message.data.clientId;
+                this.isAdmin = message.data.isAdmin;
                 updateHash(message.data.sessionId);
 
                 // Load the youtube player
                 this.sessionState = message.data.state;
-                createYoutubeIframe();
+                if (this.sessionState.queue.length > 0) createYoutubeIframe();
     
                 console.log("Joined session:", this.sessionId);
 
@@ -69,61 +69,77 @@ class Connection {
                 break;
             }
             case "state-update": {
-                if (!message.success)
-                    return console.log("state-update failed");
+                if (!message.success) return console.log(message.error);
     
                 youtubeIgnoreEventChange = true;
                 setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
-                this.sessionState = message.data;
+                this.sessionState = message.data.state;
 
                 if (!youtubeIframeReady)
                     return createYoutubeIframe();
     
                 // Check if the message was sent by me
-                if (message.originalMessage.sentBy == this.clientId)
-                    return console.log("Received own message. Ignoring");
+                if (this.sentByMe(message))
+                    return;
+
+                const video = this.getVideoToPlay();
 
                 // Set timestamp
-                const timeDiff = Math.abs(player.getCurrentTime() - message.data.timestamp);
+                const timeDiff = Math.abs(player.getCurrentTime() - video.timestamp);
                 const maxTimeDesync = 0.5; // in seconds
 
                 if (timeDiff > maxTimeDesync)
-                    player.seekTo(message.data.timestamp + 0.5, true);
+                    player.seekTo(video.timestamp + 0.5, true);
 
                 // Playback speed
-                player.setPlaybackRate(message.data.playbackSpeed);
+                player.setPlaybackRate(video.playbackSpeed);
 
                 // Set paused or played
-                if (message.data.isPaused)
+                if (video.isPaused)
                     player.pauseVideo();
                 else
                     player.playVideo();
 
                 break;
             }
-            case "play-next-video": {
-
-                this.sessionState = { ...defaultSessionState, currentVideoId: message.data.video.videoId };
+            case "play-video-from-queue": {
+                this.sessionState = message.data.state;
+                const videoToPlay = this.sessionState.queue[this.sessionState.currentQueueIndex];
 
                 if (!youtubeIframeReady) 
                     createYoutubeIframe();
                 else
-                    player.loadVideoById(message.data.video.videoId);
+                    player.loadVideoById(videoToPlay.id);
 
                 break;
             }
-            case "queue-video": {
+            case "play-next-video": {
+                if (!message.success) return console.log(message.error);
+
+                this.sessionState = message.data.state;
+
+                if (!youtubeIframeReady) 
+                    createYoutubeIframe();
+                else
+                    player.loadVideoById(this.getVideoToPlay().id);
+                
+                break;
+            }
+            case "add-video-to-queue": {
+                if (!message.success) return console.log(message.error);
 
                 // Get the last element
-                const newQueueEntry = message.data.queue[message.data.queue.length - 1];
+                const newQueueEntry = message.data.video;
                 if (!newQueueEntry) return;
+
+                this.sessionState.queue.push(newQueueEntry);
 
                 var toAdd = "";
                 if (newQueueEntry.duration < 1) // Duration is less than one minute 
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${newQueueEntry.title.slice(0, 60) + "..."} <br><span class="channel-name">by ${newQueueEntry.channel.slice(0, 20) + "..."}</span> (${Math.round(newQueueEntry.duration * 60)} seconds)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration * 60)} seconds)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
                 else
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${newQueueEntry.title.slice(0, 60) + "..."} <br><span class="channel-name">by ${newQueueEntry.channel.slice(0, 20) + "..."}</span> (${Math.round(newQueueEntry.duration)} minutes)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration)} minutes)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
 
@@ -136,22 +152,18 @@ class Connection {
 
                 break;
             }
-            case "get-video-metadata": {
-                if (!message.success) return console.log(message.error);
+            // case "get-video-metadata": {
+            //     if (!message.success) return console.log(message.error);
 
-                var toAdd = "";
-                if (message.data.duration < 1) // Duration is less than one minute 
-                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration * 60)} seconds)</p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
-                else
-                    toAdd = `<div data-id=${message.data.id} class="video-div"><p class="video">${message.data.title} by ${message.data.channel} (${Math.round(message.data.duration)} minutes)</p><button onclick="deleteVideo(${message.data.id})" class="del-video">🗑️</button></div>`;
+                
 
-                document.getElementById('queue').innerHTML += toAdd;
-
-                break;
-            }
+            //     break;
+            // }
             case "broadcast-clients": {
                 if (!message.success) return console.log(message.error);
+                
                 displayWatchers(message.data.watchers);
+                
                 break;
             }
             default: {
@@ -159,5 +171,13 @@ class Connection {
                 break;
             }
         }
+    }
+
+    getVideoToPlay() {
+        return this.sessionState.queue[this.sessionState.currentQueueIndex];
+    }
+
+    sentByMe(message) {
+        return message.originalMessage.sentBy == this.clientId;
     }
 }
