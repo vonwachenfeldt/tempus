@@ -2,8 +2,8 @@
 // Websockets
 
 const defaultSessionState = {
-    timestamp: 0, 
-    playbackSpeed: 1, 
+    timestamp: 0,
+    playbackSpeed: 1,
     isPaused: true,
     currentVideoId: "",
     queue: []
@@ -16,7 +16,7 @@ class Connection {
         this.isAdmin = false;
         this.sessionId = null;
         this.clientId = null;
-        
+
         this.url = url;
         this.conn = new WebSocket(url);
         this.conn.onopen = this.handleConnected.bind(this);
@@ -35,9 +35,9 @@ class Connection {
     handleConnected() {
         console.log("Connected to", this.url);
 
-        this.send({ 
-            type: "join-session", 
-            data: { sessionId: window.location.hash.slice(1) } 
+        this.send({
+            type: "join-session",
+            data: { sessionId: window.location.hash.slice(1) }
         });
     }
 
@@ -58,7 +58,7 @@ class Connection {
                 // Load the youtube player
                 this.sessionState = message.data.state;
                 if (this.sessionState.queue.length > 0) createYoutubeIframe();
-    
+
                 console.log("Joined session:", this.sessionId);
 
                 break;
@@ -70,7 +70,7 @@ class Connection {
             }
             case "state-update": {
                 if (!message.success) return console.log(message.error);
-    
+
                 youtubeIgnoreEventChange = true;
                 setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
@@ -78,7 +78,7 @@ class Connection {
 
                 if (!youtubeIframeReady)
                     return createYoutubeIframe();
-    
+
                 // Check if the message was sent by me
                 if (this.sentByMe(message))
                     return;
@@ -107,7 +107,7 @@ class Connection {
                 this.sessionState = message.data.state;
                 const videoToPlay = this.sessionState.queue[this.sessionState.currentQueueIndex];
 
-                if (!youtubeIframeReady) 
+                if (!youtubeIframeReady)
                     createYoutubeIframe();
                 else
                     player.loadVideoById(videoToPlay.id);
@@ -119,11 +119,11 @@ class Connection {
 
                 this.sessionState = message.data.state;
 
-                if (!youtubeIframeReady) 
+                if (!youtubeIframeReady)
                     createYoutubeIframe();
                 else
                     player.loadVideoById(this.getVideoToPlay().id);
-                
+
                 break;
             }
             case "add-video-to-queue": {
@@ -137,9 +137,9 @@ class Connection {
 
                 var toAdd = "";
                 if (newQueueEntry.duration < 1) // Duration is less than one minute 
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration * 60)} seconds)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${(newQueueEntry.title.length > 60) ? newQueueEntry.title.slice(0, 60) + "..." : newQueueEntry.title} <br><span class="channel-name">by ${newQueueEntry.channel.slice(0, 20) + "..."}</span> (${Math.round(newQueueEntry.duration * 60)} seconds)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
                 else
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video">${newQueueEntry.title} by ${newQueueEntry.channel} (${Math.round(newQueueEntry.duration)} minutes)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${(newQueueEntry.title.length > 60) ? newQueueEntry.title.slice(0, 60) + "..." : newQueueEntry.title} <br><span class="channel-name">by ${newQueueEntry.channel.slice(0, 20) + "..."}</span> (${Math.round(newQueueEntry.duration)} minutes)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
 
@@ -155,15 +155,15 @@ class Connection {
             // case "get-video-metadata": {
             //     if (!message.success) return console.log(message.error);
 
-                
+
 
             //     break;
             // }
             case "broadcast-clients": {
                 if (!message.success) return console.log(message.error);
-                
+
                 displayWatchers(message.data.watchers);
-                
+
                 break;
             }
             default: {

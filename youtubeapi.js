@@ -1,5 +1,4 @@
-// var serverUrl = window.location.port ? "ws://localhost:8080/tempus" : "wss://ludvig.cloudno.de/tempus";
-var serverUrl = "wss://ludvig.cloudno.de/tempus";
+var serverUrl = window.location.port ? "ws://localhost:8080/tempus" : "wss://ludvig.cloudno.de/tempus";
 
 var connection = new Connection(serverUrl);
 var player;
