@@ -1,4 +1,6 @@
-var connection = new Connection("ws://localhost:3500/tempus");
+var serverUrl = window.location.port ? "ws://localhost:8080/tempus" : "wss://ludvig.cloudno.de/tempus";
+
+var connection = new Connection(serverUrl);
 var player;
 
 var youtubeIframeReady = false;
