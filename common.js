@@ -1,13 +1,14 @@
 const addVideoToQueueHtml = (video) => {
     var title = (video.title.length > 50) ? video.title.slice(0, 50) + "..." : video.title;
     var channel = (video.channel.length > 20) ? video.channel.slice(0, 20) + "..." : video.channel
-    var durationStr = video.duration < 1 ? (Math.round(video.duration * 60) + "s") : (Math.round(video.duration) + "min"); 
+    var durationStr = video.duration < 1 ? (Math.round(video.duration * 60) + "s") : (Math.round(video.duration) + " min"); 
+    var thumbnail = video.thumbnail.url;
 
     var toAdd = 
         `<div data-id=${video.id} class="video-div">
             <p class="video">
-                <img class="thumbnail" src="16by9.png">
-                <span class="overlay">${durationStr} s</span>
+                <img class="thumbnail" src="${thumbnail}">
+                <span class="overlay">${durationStr}</span>
                 <span class="queue-title" onclick="playVideo('${video.id}')">${title}</span>
                 <br>
                 <span class="channel-name">by ${channel}</span>
