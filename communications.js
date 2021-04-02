@@ -110,8 +110,22 @@ class Connection {
 
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
-                else
+                else {
                     player.loadVideoById(videoToPlay.id);
+
+                    youtubeIgnoreEventChange = true;
+                    setTimeout(() => youtubeIgnoreEventChange = false, 100);
+    
+                    player.seekTo(videoToPlay.timestamp, true);
+                    // Playback speed
+                    player.setPlaybackRate(videoToPlay.playbackSpeed);
+    
+                    // Set paused or played
+                    if (videoToPlay.isPaused)
+                        player.pauseVideo();
+                    else
+                        player.playVideo();
+                }
 
                 break;
             }
