@@ -161,12 +161,14 @@ class Connection {
                 console.log("This is the deleted id: " + message.data.deleted)
                 console.log(getVideoData().currentVideoId)
 
-                if(message.data.deleted == getVideoData().currentVideoId) {
-                    connection.send({
-                        type: "play-video-from-queue",
-                        data: { queueIndex: 0},
-                        date: Date.now()
-                    });
+                if(connection.sessionState.queue != "") {
+                    if(message.data.deleted == getVideoData().currentVideoId) {
+                        connection.send({
+                            type: "play-video-from-queue",
+                            data: { queueIndex: 0},
+                            date: Date.now()
+                        });
+                    }
                 }
 
                 if(connection.sessionState.queue == "") {
