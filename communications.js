@@ -114,23 +114,11 @@ class Connection {
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
                 else {
-                    console.log(videoToPlay.timestamp)
                     player.loadVideoById(videoToPlay.id, videoToPlay.timestamp);
                     youtubeShouldSeekToStart = true;
-                    // player.playVideo();
 
-                    // youtubeIgnoreEventChange = true;
-                    // setTimeout(() => youtubeIgnoreEventChange = false, 100);
-    
-                    //player.seekTo(videoToPlay.timestamp, false);
                     // Playback speed
-                    //player.setPlaybackRate(videoToPlay.playbackSpeed);
-    
-                    // Set paused or played
-                    // if (videoToPlay.isPaused)
-                    //     player.pauseVideo();
-                    // else
-                        // player.playVideo();
+                    player.setPlaybackRate(videoToPlay.playbackSpeed);
                 }
 
                 break;
@@ -142,8 +130,10 @@ class Connection {
 
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
-                else
+                else {
                     player.loadVideoById(this.getVideoToPlay().id);
+                    youtubeShouldSeekToStart = true;
+                }
 
                 break;
             }

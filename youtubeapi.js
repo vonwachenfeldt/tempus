@@ -74,7 +74,7 @@ function onPlayerStateChange(event) {
     if (youtubeShouldSeekToStart) {
         player.seekTo(0);
         setTimeout(() => player.playVideo(), 50);
-        
+
         youtubeShouldSeekToStart = false;
     }
 
@@ -99,7 +99,7 @@ function onPlayerStateChange(event) {
 
             youtubeIgnoreEventChange = true;
 
-            //player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
+            player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
 
             setTimeout(() => youtubeIgnoreEventChange = false, 500);
 
@@ -115,6 +115,11 @@ function onPlayerStateChange(event) {
             data: getVideoData(),
             date: Date.now()
         });
+    }
+    if (event.data === YT.PlayerState.BUFFERING) {
+        console.log("BUFFERING");
+        player.playVideo();
+
     }
     if (event.data === YT.PlayerState.ENDED) {
         console.log("Video ended");
