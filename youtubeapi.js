@@ -7,10 +7,14 @@ var youtubeIframeReady = false;
 var youtubeHasStartedVideo = false;
 var youtubeVideoFirstLoad = true;
 var youtubeIgnoreEventChange = true;
+var youtubeTimeToLoad = null;
+var youtubeStartedLoadingAt = null;
 
 function createYoutubeIframe() {
     if (connection.sessionState.queue.length == 0) return; // If no videos exists
     if (youtubeIframeReady) return; // Don't create duplicate iframes
+
+    youtubeStartedLoadingAt = Date.now();
 
     var tag = document.createElement('script');
 
@@ -25,6 +29,7 @@ function onYouTubeIframeAPIReady() {
         width: '640',
         videoId: connection.getVideoToPlay().id,
         playerVars: {
+            'start': 0,
             'autoplay': 0,
             'origin': "https://tempus-luddet.vercel.app",
             "rel": 0,
@@ -44,11 +49,13 @@ function onPlayerReady() {
     youtubeIgnoreEventChange = true;
     setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
-    const video = connection.getVideoToPlay().id;
+    const video = connection.getVideoToPlay();
+
+    console.log(video)
 
     // Set video state
-    if (video.timestamp != 0)
-        player.seekTo(video.timestamp, true);
+    //if (video.timestamp != 0)
+    player.seekTo(video.timestamp, true);
 
     // Playback speed
     player.setPlaybackRate(video.playbackSpeed);
@@ -67,15 +74,29 @@ function onPlayerStateChange(event) {
 
     if (event.data === YT.PlayerState.PLAYING) {
         updateTitle(`Playing: ${player.getVideoData().title}`)
-        
-        connection.send({
-            type: "state-update",
-            data: { ...getVideoData(), firstLoad: youtubeVideoFirstLoad },
-            date: Date.now()
-        });
+
+        if (!youtubeVideoFirstLoad || connection.isAdmin) {
+            connection.send({
+                type: "state-update",
+                data: { ...getVideoData(), firstLoad: youtubeVideoFirstLoad },
+                date: Date.now()
+            });
+        }
 
         // If the video loaded for the first time
-        if (youtubeVideoFirstLoad) youtubeVideoFirstLoad = false;
+        if (youtubeVideoFirstLoad && connection.getVideoToPlay().timestamp != 0) {
+            youtubeTimeToLoad = (Date.now() - youtubeStartedLoadingAt) / 1000;
+
+            console.log("Youtube took %s seconds to start playing video", youtubeTimeToLoad, connection.getVideoToPlay());
+
+            youtubeIgnoreEventChange = true;
+
+            player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
+
+            setTimeout(() => youtubeIgnoreEventChange = false, 500);
+
+            youtubeVideoFirstLoad = false;
+        }
     }
     if (event.data === YT.PlayerState.PAUSED) {
         updateTitle(`Paused: ${player.getVideoData().title}`)

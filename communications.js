@@ -16,6 +16,7 @@ class Connection {
         this.isAdmin = false;
         this.sessionId = null;
         this.clientId = null;
+        this.watchers = 0;
 
         this.url = url;
         this.conn = new WebSocket(url);
@@ -90,7 +91,7 @@ class Connection {
                 const maxTimeDesync = 0.5; // in seconds
 
                 if (timeDiff > maxTimeDesync)
-                    player.seekTo(video.timestamp + 0.5, true);
+                    player.seekTo(video.timestamp + maxTimeDesync, true);
 
                 // Playback speed
                 player.setPlaybackRate(video.playbackSpeed);
@@ -170,6 +171,8 @@ class Connection {
             }
             case "broadcast-clients": {
                 if (!message.success) return console.log(message.error);
+
+                this.watchers = message.data.watchers;
 
                 displayWatchers(message.data.watchers);
 
