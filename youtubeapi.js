@@ -4,6 +4,8 @@ var connection = new Connection(serverUrl);
 var player;
 
 var youtubeIframeReady = false;
+var youtubeHasStartedVideo = false;
+var youtubeVideoFirstLoad = true;
 var youtubeIgnoreEventChange = true;
 
 function createYoutubeIframe() {
@@ -65,12 +67,15 @@ function onPlayerStateChange(event) {
 
     if (event.data === YT.PlayerState.PLAYING) {
         updateTitle(`Playing: ${player.getVideoData().title}`)
-
+        
         connection.send({
             type: "state-update",
-            data: getVideoData(),
+            data: { ...getVideoData(), firstLoad: youtubeVideoFirstLoad },
             date: Date.now()
         });
+
+        // If the video loaded for the first time
+        if (youtubeVideoFirstLoad) youtubeVideoFirstLoad = false;
     }
     if (event.data === YT.PlayerState.PAUSED) {
         updateTitle(`Paused: ${player.getVideoData().title}`)
