@@ -116,7 +116,6 @@ input:focus
   border-radius: 4px;
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
-  background-color: white;
   text-align: left;
   text-overflow: ellipsis;
   background-color: rgb(12, 12, 12);
@@ -172,6 +171,10 @@ input:focus
   font-size: 1.25rem;
   text-align: center;
   height: 50px;
+}
+.video-current
+{
+    /* background-color: rgb(68, 68, 68); */
 }
 .mini-button:hover, .mini-button:focus
 {

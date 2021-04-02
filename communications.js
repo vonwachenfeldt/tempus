@@ -111,6 +111,11 @@ class Connection {
                 this.sessionState = message.data.state;
                 const videoToPlay = this.sessionState.queue[this.sessionState.currentQueueIndex];
 
+                for (let i = 0; i < document.querySelector("#queue").children.length; i++) {
+                    document.querySelector("#queue").children[i].firstElementChild.style.backgroundColor = "";
+                }
+                document.querySelector(`[data-id='${videoToPlay.id}']`).firstElementChild.style.backgroundColor = "rgb(68, 68, 68)";
+
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
                 else {
