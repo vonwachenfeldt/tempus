@@ -184,5 +184,5 @@ function updateTitle(title) {
 }
 
 function deleteVideo(id) {
-    connection.send({type: "delete-queue-entry", data: {id: id}});
+    connection.send({type: "delete-video-from-queue", data: {id: id.toString()}});
 }
