@@ -205,5 +205,10 @@ function updateTitle(title) {
 }
 
 function deleteVideo(id) {
-    connection.send({type: "delete-video-from-queue", data: {id: id.toString()}});
+    connection.send({ type: "delete-video-from-queue", data: { id: id.toString() } });
+}
+
+function playVideo(id) {
+    const index = connection.sessionState.queue.indexOf(connection.sessionState.queue.find(vid => vid.id === id));
+    connection.send({ type: "play-video-from-queue", data: { queueIndex: index } });
 }
