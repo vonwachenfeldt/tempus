@@ -135,11 +135,15 @@ class Connection {
 
                 this.sessionState.queue.push(newQueueEntry);
 
+                if (document.body.contains(document.getElementById("queue-info"))) {
+                    document.getElementById("queue-info").remove();
+                }
+
                 var toAdd = "";
                 if (newQueueEntry.duration < 1) // Duration is less than one minute 
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${(newQueueEntry.title.length > 60) ? newQueueEntry.title.slice(0, 60) + "..." : newQueueEntry.title} <br><span class="channel-name">by ${(newQueueEntry.channel.length > 20) ? newQueueEntry.channel.slice(0, 20) + "..." : newQueueEntry.channel}</span> (${Math.round(newQueueEntry.duration * 60)} seconds)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"><span class="overlay">${Math.round(newQueueEntry.duration * 60)} s</span>${(newQueueEntry.title.length > 50) ? newQueueEntry.title.slice(0, 50) + "..." : newQueueEntry.title}<br><span class="channel-name">by ${(newQueueEntry.channel.length > 20) ? newQueueEntry.channel.slice(0, 20) + "..." : newQueueEntry.channel}</span><br><button class="mini-button">▶</button><button class="mini-button" onclick="deleteVideo(${newQueueEntry.id})">🗑️</button></p></div>`;
                 else
-                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"> ${(newQueueEntry.title.length > 60) ? newQueueEntry.title.slice(0, 60) + "..." : newQueueEntry.title} <br><span class="channel-name">by ${(newQueueEntry.channel.length > 20) ? newQueueEntry.channel.slice(0, 20) + "..." : newQueueEntry.channel}</span> (${Math.round(newQueueEntry.duration)} minutes)</p><button onclick="deleteVideo(${newQueueEntry.id})" class="del-video">🗑️</button></div>`;
+                    toAdd = `<div data-id=${newQueueEntry.id} class="video-div"><p class="video"><img class="thumbnail" src="16by9.png"><span class="overlay">${Math.round(newQueueEntry.duration)} min</span>${(newQueueEntry.title.length > 50) ? newQueueEntry.title.slice(0, 50) + "..." : newQueueEntry.title}<br><span class="channel-name">by ${(newQueueEntry.channel.length > 20) ? newQueueEntry.channel.slice(0, 20) + "..." : newQueueEntry.channel}</span><br><button class="mini-button">▶</button><button class="mini-button" onclick="deleteVideo(${newQueueEntry.id})">🗑️</button></p></div>`;
 
                 document.getElementById('queue').innerHTML += toAdd;
 
