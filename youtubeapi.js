@@ -167,15 +167,6 @@ const invite = str => {
     showSnack("Copied", 1000)
 };
 
-function showSnack(message, ms) {
-    var snack = document.getElementById("snackbar");
-
-    snack.className = "show";
-    snack.textContent = message;
-
-    setTimeout(function () { snack.className = snack.className.replace("show", ""); }, ms);
-}
-
 function queueVideo(event, url) {
     event.preventDefault();
     connection.send({ type: "add-video-to-queue", data: { url } });

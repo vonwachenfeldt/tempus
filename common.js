@@ -19,4 +19,14 @@ const addVideoToQueueHtml = (video) => {
         </div>`;
 
     document.getElementById('queue').innerHTML += toAdd;
+    showSnack(`"${title}" added to queue`, 1000)
+}
+
+function showSnack(message, ms) {
+    var snack = document.getElementById("snackbar");
+
+    snack.className = "show";
+    snack.textContent = message;
+
+    setTimeout(function () { snack.className = snack.className.replace("show", ""); }, ms);
 }
