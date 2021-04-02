@@ -127,6 +127,7 @@ input:focus
 .thumbnail
 {
   width: 120px;
+  height: 67.5px;
   margin-right: 20px;
   vertical-align: middle;
   float: left;
@@ -145,7 +146,7 @@ input:focus
   margin-top: 0rem;
   user-select: none;
   z-index: 1;
-  height: 46px;
+  height: 47px;
   opacity: 0;
   padding-top: 20px;
 }
