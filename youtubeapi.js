@@ -13,7 +13,11 @@ var youtubeShouldSeekToStart = false;
 
 function createYoutubeIframe() {
     if (connection.sessionState.queue.length == 0) return; // If no videos exists
-    if (youtubeIframeReady) return; // Don't create duplicate iframes
+    if (youtubeIframeReady) return;
+
+    // If the script already is loaded
+    if (document.querySelector("#www-widgetapi-script"))
+        return onYouTubeIframeAPIReady();
 
     youtubeStartedLoadingAt = Date.now();
 
@@ -22,9 +26,15 @@ function createYoutubeIframe() {
     tag.src = "https://www.youtube.com/iframe_api";
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    return true;
 }
 
 function onYouTubeIframeAPIReady() {
+    if (connection.sessionState.queue.length == 0) return; // If no videos exists
+
+    if (!youtubeStartedLoadingAt) youtubeStartedLoadingAt = Date.now();
+
     player = new YT.Player('player', {
         height: '390',
         width: '640',
@@ -42,6 +52,8 @@ function onYouTubeIframeAPIReady() {
             'onStateChange': onPlayerStateChange
         }
     });
+
+    return true;
 }
 
 function onPlayerReady() {
@@ -69,7 +81,7 @@ function onPlayerReady() {
 }
 
 function onPlayerStateChange(event) {
-    if (youtubeIgnoreEventChange) return console.log("IGNORE");
+    if (youtubeIgnoreEventChange) return;
 
     if (youtubeShouldSeekToStart) {
         player.seekTo(0);
@@ -80,8 +92,6 @@ function onPlayerStateChange(event) {
 
     if (event.data === YT.PlayerState.PLAYING) {
         updateTitle(`Playing: ${player.getVideoData().title}`)
-
-        console.log("PLAYING")
 
         if (!youtubeVideoFirstLoad || connection.isAdmin) {
             connection.send({
@@ -101,13 +111,12 @@ function onPlayerStateChange(event) {
 
             player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
 
-            setTimeout(() => youtubeIgnoreEventChange = false, 500);
+            setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
             youtubeVideoFirstLoad = false;
         }
     }
     if (event.data === YT.PlayerState.PAUSED) {
-        console.log("PAUSE")
         updateTitle(`Paused: ${player.getVideoData().title}`)
 
         connection.send({
@@ -115,11 +124,6 @@ function onPlayerStateChange(event) {
             data: getVideoData(),
             date: Date.now()
         });
-    }
-    if (event.data === YT.PlayerState.BUFFERING) {
-        console.log("BUFFERING");
-        player.playVideo();
-
     }
     if (event.data === YT.PlayerState.ENDED) {
         console.log("Video ended");

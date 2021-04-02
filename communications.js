@@ -116,12 +116,13 @@ class Connection {
                 }
                 document.querySelector(`[data-id='${videoToPlay.id}']`).firstElementChild.style.backgroundColor = "rgb(68, 68, 68)";
 
-                if (!youtubeIframeReady)
+
+                if (!youtubeIframeReady) {
                     createYoutubeIframe();
-                else {
+                } else {
                     player.loadVideoById(videoToPlay.id, videoToPlay.timestamp);
                     youtubeShouldSeekToStart = true;
-
+    
                     // Playback speed
                     player.setPlaybackRate(videoToPlay.playbackSpeed);
                 }
@@ -164,23 +165,30 @@ class Connection {
 
                 this.sessionState.queue = message.data.queue;
 
-                console.log(message.data)
+                const currentVideoId = getVideoData().currentVideoId;
+
                 document.getElementById('queue').removeChild(document.querySelector(`[data-id='${message.data.deleted}']`));
 
                 console.log("This is the deleted id: " + message.data.deleted)
-                console.log(getVideoData().currentVideoId)
 
-                if(connection.sessionState.queue != "") {
-                    if(message.data.deleted == getVideoData().currentVideoId) {
-                        connection.send({
+                if(this.sessionState.queue.length > 0) {
+                    if(message.data.deleted == currentVideoId) {
+                        
+                        var previousVideo = this.sessionState.currentQueueIndex - 1;
+                        if (previousVideo < 0) previousVideo = 0;
+
+                        this.send({
                             type: "play-video-from-queue",
-                            data: { queueIndex: 0},
+                            data: { queueIndex: previousVideo },
                             date: Date.now()
                         });
                     }
                 }
 
-                if(connection.sessionState.queue == "") {
+                if(this.sessionState.queue.length == 0) {
+                    player = null;
+                    youtubeIframeReady = false;
+
                     document.getElementById('player').remove();
                     document.querySelector(`[class='player-container']`).innerHTML += `<div id="player"><h1 id="no-video">Please queue using the input above</h1></div>`;
                 }
