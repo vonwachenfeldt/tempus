@@ -152,6 +152,8 @@ class Connection {
             case "delete-video-from-queue": {
                 if (!message.success) return console.log(message.error);
 
+                this.sessionState.queue = message.data.queue;
+
                 console.log(message.data)
                 document.getElementById('queue').removeChild(document.querySelector(`[data-id='${message.data.deleted}']`));
 
@@ -164,6 +166,11 @@ class Connection {
                         data: { queueIndex: 0},
                         date: Date.now()
                     });
+                }
+
+                if(connection.sessionState.queue == "") {
+                    document.getElementById('player').remove();
+                    document.querySelector(`[class='player-container']`).innerHTML += `<div id="player"><h1 id="no-video">Please queue using the input above</h1></div>`;
                 }
 
                 break;
