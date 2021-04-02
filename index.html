@@ -11,26 +11,24 @@
 </head>
 
 <body>
-    <div style="margin-top: 10%; font-size: 2rem;" class="player-container">
+    <div style="margin: 0 auto; margin-top: 10%; font-size: 2rem;" class="player-container">
         <h1>Tempus - Watch <img src="youtube.png" id="youtube-icon-larger"> Together</h1>
     </div>
     <div class="route-container">
-        <button class="route" onclick="showInputfield(true)">Join a session</button>
-        <button class="route" onclick="showInputfield(false)">Create a session</button>
-        <a class="route" onclick="">Help</a>
+        <button class="route" onclick="showInputfield()">Enter a room</button>
         <br>
         <div id="input-div" style="visibility: hidden;">
-            <h1 id="type-title"></h1>
             <form onsubmit="attemptTojoinSession(event);" autocomplete="off">
-                <input id="session-input" placeholder="Session-ID" style="width: 400px;">
+                <input id="session-input" placeholder="Name of the room / ID" style="width: 100%;">
             </form>
         </div>
     </div>
     <footer>
         <a class="footer-link" href="https://www.github.com/vonwachenfeldt/tempus" target="_blank">Client on GitHub</a>
-        <a class="footer-link" href="https://www.github.com/vonwachenfeldt/tempus" target="_blank">Server on GitHub</a>
+        <a class="footer-link" href="https://www.github.com/vonwachenfeldt/tempus-server" target="_blank">Server on GitHub</a>
     </footer>
 
+    <script src="youtubeapi.js"></script>
     <script src="http://localhost:9731/client-script.js"></script>
 </body>
 

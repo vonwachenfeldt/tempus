@@ -185,13 +185,9 @@ function displayWatchers(amount) {
     }
 }
 
-function showInputfield(inputSwitch) { // true = join a room with id, false = create a room with id
+function showInputfield() { // true = join a room with id, false = create a room with id
     document.getElementById("input-div").style.visibility = "visible";
-    if (inputSwitch == true) {
-        document.getElementById('type-title').textContent = "Join a session"
-    } else if (inputSwitch == false) {
-        document.getElementById('type-title').textContent = "Create a session"
-    }
+    document.getElementById('type-title').textContent = "Join a room"
 }
 
 function attemptTojoinSession(event) {
