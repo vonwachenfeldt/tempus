@@ -60,6 +60,9 @@ class Connection {
                 this.sessionState = message.data.state;
                 if (this.sessionState.queue.length > 0) createYoutubeIframe();
 
+                // Set the queue
+                this.sessionState.queue.forEach(video => addVideoToQueueHtml(video));
+
                 console.log("Joined session:", this.sessionId);
 
                 break;
@@ -111,20 +114,23 @@ class Connection {
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
                 else {
-                    player.loadVideoById(videoToPlay.id);
+                    console.log(videoToPlay.timestamp)
+                    player.loadVideoById(videoToPlay.id, videoToPlay.timestamp);
+                    youtubeShouldSeekToStart = true;
+                    // player.playVideo();
 
-                    youtubeIgnoreEventChange = true;
-                    setTimeout(() => youtubeIgnoreEventChange = false, 100);
+                    // youtubeIgnoreEventChange = true;
+                    // setTimeout(() => youtubeIgnoreEventChange = false, 100);
     
-                    player.seekTo(videoToPlay.timestamp, true);
+                    //player.seekTo(videoToPlay.timestamp, false);
                     // Playback speed
-                    player.setPlaybackRate(videoToPlay.playbackSpeed);
+                    //player.setPlaybackRate(videoToPlay.playbackSpeed);
     
                     // Set paused or played
-                    if (videoToPlay.isPaused)
-                        player.pauseVideo();
-                    else
-                        player.playVideo();
+                    // if (videoToPlay.isPaused)
+                    //     player.pauseVideo();
+                    // else
+                        // player.playVideo();
                 }
 
                 break;

@@ -9,6 +9,7 @@ var youtubeVideoFirstLoad = true;
 var youtubeIgnoreEventChange = true;
 var youtubeTimeToLoad = null;
 var youtubeStartedLoadingAt = null;
+var youtubeShouldSeekToStart = false;
 
 function createYoutubeIframe() {
     if (connection.sessionState.queue.length == 0) return; // If no videos exists
@@ -51,8 +52,6 @@ function onPlayerReady() {
 
     const video = connection.getVideoToPlay();
 
-    console.log(video)
-
     // Set video state
     //if (video.timestamp != 0)
     player.seekTo(video.timestamp, true);
@@ -70,10 +69,19 @@ function onPlayerReady() {
 }
 
 function onPlayerStateChange(event) {
-    if (youtubeIgnoreEventChange) return;
+    if (youtubeIgnoreEventChange) return console.log("IGNORE");
+
+    if (youtubeShouldSeekToStart) {
+        player.seekTo(0);
+        setTimeout(() => player.playVideo(), 50);
+        
+        youtubeShouldSeekToStart = false;
+    }
 
     if (event.data === YT.PlayerState.PLAYING) {
         updateTitle(`Playing: ${player.getVideoData().title}`)
+
+        console.log("PLAYING")
 
         if (!youtubeVideoFirstLoad || connection.isAdmin) {
             connection.send({
@@ -91,7 +99,7 @@ function onPlayerStateChange(event) {
 
             youtubeIgnoreEventChange = true;
 
-            player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
+            //player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
 
             setTimeout(() => youtubeIgnoreEventChange = false, 500);
 
@@ -99,6 +107,7 @@ function onPlayerStateChange(event) {
         }
     }
     if (event.data === YT.PlayerState.PAUSED) {
+        console.log("PAUSE")
         updateTitle(`Paused: ${player.getVideoData().title}`)
 
         connection.send({
