@@ -24,6 +24,11 @@ class Connection {
 
         // Receiving message
         this.conn.onmessage = this.handleMessage.bind(this);
+
+
+        this.conn.onerror = function (event) {
+            showSnack("Error: Could not connect to the server", 1000)
+        };
     }
 
     send(data) {
@@ -123,7 +128,7 @@ class Connection {
                 } else {
                     player.loadVideoById(videoToPlay.id, videoToPlay.timestamp);
                     youtubeShouldSeekToStart = true;
-    
+
                     // Playback speed
                     player.setPlaybackRate(videoToPlay.playbackSpeed);
                 }
@@ -170,9 +175,9 @@ class Connection {
 
                 console.log("This is the deleted id: " + message.data.deleted)
 
-                if(this.sessionState.queue.length > 0) {
-                    if(message.data.deleted == currentVideoId) {
-                        
+                if (this.sessionState.queue.length > 0) {
+                    if (message.data.deleted == currentVideoId) {
+
                         var previousVideo = this.sessionState.currentQueueIndex - 1;
                         if (previousVideo < 0) previousVideo = 0;
 
@@ -184,7 +189,7 @@ class Connection {
                     }
                 }
 
-                if(this.sessionState.queue.length == 0) {
+                if (this.sessionState.queue.length == 0) {
                     player = null;
                     youtubeIframeReady = false;
 
