@@ -1,8 +1,8 @@
 const addVideoToQueueHtml = (video) => {
-    var durationStr = video.duration < 1 ? (Math.round(video.duration * 60) + "s") : (Math.round(video.duration) + " min"); 
+    var durationStr = video.duration < 1 ? (Math.round(video.duration * 60) + "s") : (Math.round(video.duration) + " min");
     var thumbnail = video.thumbnail.url;
 
-    var toAdd = 
+    var toAdd =
         `<div data-id=${video.id} class="video-div video">
             <div class="video-thumbnail-container" onclick="playVideo('${video.id}')">
                 <img class="thumbnail" src="${thumbnail}">
@@ -35,4 +35,27 @@ function showSnack(message, ms) {
     snack.textContent = message;
 
     setTimeout(function () { snack.className = snack.className.replace("show", ""); }, ms);
+}
+
+function addProgressBar(id) {
+    document.querySelector(`[data-id='${id}']`).innerHTML += `<div id="progress-bar"><div id="progress"></div></div>`;
+    if(trackingProgress == false) {
+        trackProgress(id);
+    }
+}
+
+var trackingProgress = false;
+function trackProgress(id) {
+    trackingProgress = true
+    console.log("started to track progress")
+    setInterval(() => {
+        // The last div (progressbar-bar) and the last (and only) element of it (progress)
+        document.getElementById('progress').style.width = `${(player.getCurrentTime())/(player.getDuration())*100}%`
+    }, 33)
+}
+
+function removeTrackProgress() {
+    if(document.contains(document.getElementById('progress-bar'))) {
+        document.getElementById('progress-bar').remove();
+    }
 }

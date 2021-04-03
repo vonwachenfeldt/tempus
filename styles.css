@@ -372,6 +372,23 @@ form {
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
+#progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  height: 10px;
+  position: absolute;
+  bottom: 0px;
+  margin: 0 auto;
+  padding: 0;
+  right: 0;
+}
+
+#progress {
+  width: 0%;
+  height: 10px;
+  background-color: #af4c4c;
+}
+
 @-webkit-keyframes fadein {
     from {
         bottom: 0;
@@ -429,6 +446,12 @@ form {
         height: calc(100px * 0.5625);
     }
 
+    .video-thumbnail-container
+    {
+      width: 100px;
+      height: calc(100px * 0.5625);
+    }
+
     .video-text-container {
         width: 100%;
     }
@@ -456,6 +479,7 @@ form {
     {
         flex-wrap: wrap;
     }
+
   #title-fraction
   {
     display: none;
@@ -489,8 +513,8 @@ form {
   }
 
     .video-thumbnail-container {
-        width: 120px;
-        height: calc(120px * 0.5625);
+        width: 100px;
+        height: calc(100px * 0.5625);
     }
 
     .video-text-container {

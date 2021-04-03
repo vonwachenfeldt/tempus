@@ -93,6 +93,10 @@ function onPlayerStateChange(event) {
     if (event.data === YT.PlayerState.PLAYING) {
         updateTitle(`Playing: ${player.getVideoData().title}`)
 
+        if(!document.body.contains(document.getElementById('progress-bar'))) {
+            addProgressBar(player.getVideoData()['video_id']);
+        }
+
         if (!youtubeVideoFirstLoad || connection.isAdmin) {
             connection.send({
                 type: "state-update",

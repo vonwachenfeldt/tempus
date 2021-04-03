@@ -108,6 +108,7 @@ class Connection {
                 break;
             }
             case "play-video-from-queue": {
+                removeTrackProgress()
                 this.sessionState = message.data.state;
                 const videoToPlay = this.sessionState.queue[this.sessionState.currentQueueIndex];
 
@@ -115,7 +116,7 @@ class Connection {
                     document.querySelector("#queue").children[i].firstElementChild.style.backgroundColor = "";
                 }
                 document.querySelector(`[data-id='${videoToPlay.id}']`).firstElementChild.style.backgroundColor = "rgb(68, 68, 68)";
-
+                addProgressBar(videoToPlay.id);
 
                 if (!youtubeIframeReady) {
                     createYoutubeIframe();
