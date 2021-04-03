@@ -91,10 +91,10 @@ class Connection {
 
                 // Set timestamp
                 const timeDiff = Math.abs(player.getCurrentTime() - video.timestamp);
-                const maxTimeDesync = 0.5; // in seconds
+                const maxTimeDesync = 1; // in seconds
 
                 if (timeDiff > maxTimeDesync)
-                    player.seekTo(video.timestamp + maxTimeDesync, true);
+                    player.seekTo(video.timestamp + 0.5, true);
 
                 // Playback speed
                 player.setPlaybackRate(video.playbackSpeed);

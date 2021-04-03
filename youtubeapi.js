@@ -85,7 +85,7 @@ function onPlayerStateChange(event) {
 
     if (youtubeShouldSeekToStart) {
         player.seekTo(0);
-        setTimeout(() => player.playVideo(), 50);
+        setTimeout(() => player.playVideo(), 100);
 
         youtubeShouldSeekToStart = false;
     }
@@ -102,18 +102,26 @@ function onPlayerStateChange(event) {
         }
 
         // If the video loaded for the first time
-        if (youtubeVideoFirstLoad && connection.getVideoToPlay().timestamp != 0) {
-            youtubeTimeToLoad = (Date.now() - youtubeStartedLoadingAt) / 1000;
-
-            console.log("Youtube took %s seconds to start playing video", youtubeTimeToLoad, connection.getVideoToPlay());
-
-            youtubeIgnoreEventChange = true;
-
-            player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad + 0.25);
-
-            setTimeout(() => youtubeIgnoreEventChange = false, 100);
-
+        if (youtubeVideoFirstLoad) {
             youtubeVideoFirstLoad = false;
+            // if (connection.getVideoToPlay().timestamp == 0) {
+            //     youtubeVideoFirstLoad = false;
+            //     return;
+            // }
+
+            // TODO: check that the video isn't paused
+
+            // youtubeTimeToLoad = (Date.now() - youtubeStartedLoadingAt) / 1000;
+
+            // console.log("Youtube took %s seconds to start playing video", youtubeTimeToLoad, connection.getVideoToPlay());
+
+            // youtubeIgnoreEventChange = true;
+
+            // player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad);
+
+            // setTimeout(() => youtubeIgnoreEventChange = false, 100);
+
+            // youtubeVideoFirstLoad = false;
         }
     }
     if (event.data === YT.PlayerState.PAUSED) {
