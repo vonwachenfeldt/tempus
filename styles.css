@@ -95,17 +95,21 @@ input
   height: 40px;
   margin-left: 0;
 }
+input:hover:not(:focus)
+{
+  transition: 0.1s;
+  opacity: 0.9;
+}
+input:focus
+{
+  box-shadow: 0px 0px 0px 3px rgb(250, 0, 0);
+  outline-width: 3px;
+}
 #room
 {
   max-width: 350px;
   display: inline-block;
   vertical-align: middle;
-}
-input:focus
-{
-  outline: solid;
-  outline-color: rgba(250, 0, 0, 0.75);
-  outline-width: 3px;
 }
 .video
 {
@@ -123,6 +127,11 @@ input:focus
   color: white;
   height: 107px;
   margin: 0 auto;
+  margin-bottom: 2px;
+}
+img
+{
+  -webkit-user-drag: none;
 }
 .thumbnail
 {
@@ -261,9 +270,8 @@ h1
 }
 #invite:hover, .route:hover
 {
-  animation-name: colorchange;
-    animation-iteration-count: infinite;
-    animation-duration: 8s;
+  transition: 0.1s;
+  outline-color: rgb(250, 0, 0);
 }
 
 .video-title {
@@ -303,44 +311,6 @@ h1
 form {
     display: inline-block;
     width: 20%;
-}
-
-@keyframes colorchange {
-    0% {
-        outline-color: orange;
-    }
-    25% {
-        outline-color: yellow;
-    }
-    50% {
-        outline-color: greenyellow;
-    }
-    75% {
-        outline-color: cyan;
-    }
-    100% {
-        outline-color: pink;
-    }
-}
-
-@-webkit-keyframes colorchange
-
-    {
-    0% {
-        outline-color: orange;
-    }
-    25% {
-        outline-color: yellow;
-    }
-    50% {
-        outline-color: greenyellow;
-    }
-    75% {
-        outline-color: cyan;
-    }
-    100% {
-        outline-color: pink;
-    }
 }
 
 #snackbar {
