@@ -137,7 +137,7 @@ class Connection {
                 this.sessionState = message.data.state;
 
                 removeTrackProgress();
-                addProgressBar(this.getVideoToPlay().id);
+                addProgressBar(videoToPlay.id);
 
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
@@ -200,6 +200,11 @@ class Connection {
             }
             case "broadcast-clients": {
                 if (!message.success) return console.log(message.error);
+
+                if (this.getVideoToPlay()) {
+                    console.log(this.getVideoToPlay().timestamp)
+                    console.log(getVideoData().timestamp);
+                }
 
                 this.watchers = message.data.watchers;
 
