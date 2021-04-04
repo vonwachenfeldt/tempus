@@ -137,7 +137,7 @@ class Connection {
                 this.sessionState = message.data.state;
 
                 removeTrackProgress();
-                addProgressBar(videoToPlay.id);
+                addProgressBar(this.getVideoToPlay().id);
 
                 if (!youtubeIframeReady)
                     createYoutubeIframe();
