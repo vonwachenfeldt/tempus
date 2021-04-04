@@ -488,7 +488,10 @@ form {
     }
     .queue-container
     {
-        margin-top: 8px;
+        margin-top: 16px;
+        margin-left: 0;
+        width: 100%;
+        max-width: unset;
     }
 
   #title-fraction
@@ -511,20 +514,6 @@ form {
   {
     width: 100%;
     height: calc(100vw * 0.5625);
-  }
-  .status
-  {
-    bottom: 120px;
-  }
-  .queue-container
-  {
-      margin-left: 0;
-      width: 100%;
-      max-width: unset;
-  }
-  .queue-container > h1
-  {
-      margin-top: 0px;
   }
 
     .video-thumbnail-container {

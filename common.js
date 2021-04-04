@@ -49,9 +49,11 @@ function trackProgress(id) {
     trackingProgress = true
     console.log("started to track progress")
     setInterval(() => {
+        if (!player || !youtubeIframeReady) return;
+
         // The last div (progressbar-bar) and the last (and only) element of it (progress)
         document.getElementById('progress').style.width = `${(player.getCurrentTime())/(player.getDuration())*100}%`
-    }, 33)
+    }, 66 /* 15 fps */)
 }
 
 function removeTrackProgress() {
