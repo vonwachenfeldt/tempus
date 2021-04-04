@@ -137,7 +137,7 @@ input:focus
   text-overflow: ellipsis;
   background-color: #252525;
   color: white;
-  height: 90px;
+  height: 100px;
   margin: 0 auto;
   margin-bottom: 16px;
   width: 100%;
@@ -201,7 +201,7 @@ img
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
-    height: 100%;
+    height: calc(100% - 10px);
 }
 .video-button-container.small
 {
@@ -223,6 +223,30 @@ img
   line-height: 18px;
   user-select: none;
 }
+#progress-bar {
+    width: calc(100% - 32px);
+    height: 10px;
+
+    background-color: #ddd;
+    position: absolute;
+
+    margin: 0 auto;
+    padding: 0;
+    border-radius: 4px;
+    
+    right: 0;
+    left: 16px;
+    right: 16px;
+    bottom: 4px;
+  }
+  
+  #progress {
+    width: 0%;
+    height: 10px;
+    background-color: #af4c4c;
+    border-radius: 4px;
+  }
+  
 #queue-info
 {
   font-size: 1.25rem;
@@ -369,28 +393,10 @@ form {
     font-family: 'Roboto', sans-serif;
 }
 
-
 #snackbar.show {
     visibility: visible;
     -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-#progress-bar {
-  width: 100%;
-  background-color: #ddd;
-  height: 10px;
-  position: absolute;
-  bottom: 0px;
-  margin: 0 auto;
-  padding: 0;
-  right: 0;
-}
-
-#progress {
-  width: 0%;
-  height: 10px;
-  background-color: rgb(250, 0, 0);
 }
 
 @-webkit-keyframes fadein {
@@ -458,6 +464,7 @@ form {
 
     .video-text-container {
         width: 100%;
+        height: calc(100% - 10px);
     }
 
     .video-button-container {
@@ -470,7 +477,7 @@ form {
     }
 
     .video {
-        height: 115px;
+        height: 125px;
     }
 }
 
@@ -482,6 +489,13 @@ form {
     .container
     {
         flex-wrap: wrap;
+    }
+    .queue-container
+    {
+        margin-top: 16px;
+        margin-left: 0;
+        width: 100%;
+        max-width: unset;
     }
 
   #title-fraction

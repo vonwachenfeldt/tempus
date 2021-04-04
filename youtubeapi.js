@@ -72,12 +72,12 @@ function onPlayerReady() {
     player.setPlaybackRate(video.playbackSpeed);
 
     // Set paused or played
-    if (video.isPaused)
+    if (video.isPaused) {
         player.pauseVideo();
-    else
+        youtubeVideoFirstLoad = false;
+    } else {
         player.playVideo();
-
-    player.playVideo();
+    }
 }
 
 function onPlayerStateChange(event) {
@@ -107,25 +107,30 @@ function onPlayerStateChange(event) {
 
         // If the video loaded for the first time
         if (youtubeVideoFirstLoad) {
-            youtubeVideoFirstLoad = false;
+            //youtubeVideoFirstLoad = false;
             // if (connection.getVideoToPlay().timestamp == 0) {
             //     youtubeVideoFirstLoad = false;
             //     return;
             // }
 
-            // TODO: check that the video isn't paused
+            // Don't skip forward if the video is paused
+            if (connection.getVideoToPlay().isPaused) {
+                youtubeVideoFirstLoad = false;
+                return;
+            }
 
-            // youtubeTimeToLoad = (Date.now() - youtubeStartedLoadingAt) / 1000;
+            youtubeTimeToLoad = (Date.now() - youtubeStartedLoadingAt) / 1000;
 
-            // console.log("Youtube took %s seconds to start playing video", youtubeTimeToLoad, connection.getVideoToPlay());
+            console.log("Youtube took %s seconds to start playing video", youtubeTimeToLoad, connection.getVideoToPlay());
 
-            // youtubeIgnoreEventChange = true;
+            youtubeIgnoreEventChange = true;
 
-            // player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad);
+            player.seekTo(connection.getVideoToPlay().timestamp + youtubeTimeToLoad);
 
-            // setTimeout(() => youtubeIgnoreEventChange = false, 100);
+            setTimeout(() => youtubeIgnoreEventChange = false, 100);
 
-            // youtubeVideoFirstLoad = false;
+            youtubeVideoFirstLoad = false;
+            youtubeStartedLoadingAt = null;
         }
     }
     if (event.data === YT.PlayerState.PAUSED) {
